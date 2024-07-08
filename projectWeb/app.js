@@ -20,7 +20,7 @@ app.use(cookieSession({
 // Middleware สำหรับตรวจสอบว่าผู้ใช้ยังไม่ได้ล็อกอิน
 const ifNotLoggedIn = (req, res, next) => {
     if (!req.session.isLoggedIn) {
-        res.redirect('/login'); // ถ้ายังไม่ได้ล็อกอิน ให้ redirect ไปที่หน้า '/login'
+        res.redirect('/home'); // ถ้ายังไม่ได้ล็อกอิน ให้ redirect ไปที่หน้า '/login'
     } else {
         next(); // ถ้าล็อกอินแล้ว ให้ดำเนินการต่อไป
     }
@@ -41,15 +41,35 @@ app.get('/login', ifLoggedIn, (req, res) => {
     res.render('login');
 });
 
+app.get('/home', ifLoggedIn, (req, res) => {
+    res.render('home');
+});
+
+app.post('/logout', (req, res) => {
+    req.session = null
+    res.redirect('/home')
+})
 
 
 app.get('/', ifNotLoggedIn, (req, res, next) => {
     dbConnection.query("SELECT email FROM users WHERE id = $1", [req.session.userID])
         .then((result) => {
             if (result.rows.length > 0) {
-                res.render('index', {
-                    username: result.rows[0].email,
-                });
+                const userEmail = result.rows[0].email;
+                dbConnection.query("SELECT * FROM createbtn WHERE email = $1", [userEmail])
+                    .then((boardsResult) => {
+                        res.render('index', {
+                            username: userEmail,
+                            boards: boardsResult.rows
+                        });
+                    })
+                    .catch(err => {
+                        console.error('Error fetching boards:', err);
+                        res.render('index', {
+                            username: userEmail,
+                            boards: []
+                        });
+                    });
             } else {
                 res.status(404).send('User not found');
             }
@@ -153,8 +173,55 @@ app.post('/login', ifLoggedIn, [
     }
 });
 
-app.post('/logout', (req, res) => {
-    req.session = null
-    res.redirect('/login')
-})
+// createbtn
+app.post('/createboard', ifNotLoggedIn, (req, res) => {
+    const { nameboard, user_email, token } = req.body;
+    dbConnection.query(
+        "INSERT INTO createbtn (nameboard, email, token) VALUES ($1, $2, $3)",
+        [nameboard, user_email, token]
+    )
+    .then(() => {
+        res.redirect('/');
+    })
+    .catch(err => {
+        console.error('Error inserting board:', err);
+        res.status(500).send('Error creating board');
+    });
+});
+
+// deleteboard
+app.post('/deleteboard', ifNotLoggedIn, (req, res) => {
+    const { board_id } = req.body;
+    dbConnection.query(
+        "DELETE FROM createbtn WHERE id = $1", [board_id]
+    )
+    .then(() => {
+        res.redirect('/');
+    })
+    .catch(err => {
+        console.error('Error deleting board:', err);
+        res.status(500).send('Error deleting board');
+    });
+});
+
+// Route สำหรับแสดงรายละเอียดของบอร์ด
+app.get('/board/:id', ifNotLoggedIn, (req, res) => {
+    const boardId = req.params.id;
+    dbConnection.query("SELECT * FROM createbtn WHERE id = $1", [boardId])
+        .then((result) => {
+            if (result.rows.length > 0) {
+                res.render('boardDetails', {
+                    board: result.rows[0],
+                });
+            } else {
+                res.status(404).send('Board not found');
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching board details:', err);
+            res.status(500).send('Error fetching board details');
+        });
+});
+
+
 app.listen(3000, () => console.log("Server is running..."));
