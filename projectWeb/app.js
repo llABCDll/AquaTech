@@ -4,6 +4,8 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const dbConnection = require('./database');
 const { body, validationResult } = require('express-validator');
+const crypto = require('crypto');
+const transporter = require('./nodemailerConfig'); // ใช้ Nodemailer
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -26,6 +28,7 @@ const ifNotLoggedIn = (req, res, next) => {
     }
 };
 
+
 const ifLoggedIn = (req, res, next) => {
     if (req.session.isLoggedIn) {
         return res.redirect('/');
@@ -33,18 +36,27 @@ const ifLoggedIn = (req, res, next) => {
     next();
 };
 
+// register page
 app.get('/register', ifLoggedIn, (req, res) => {
     res.render('register');
 });
 
+// login page
 app.get('/login', ifLoggedIn, (req, res) => {
     res.render('login');
 });
 
+// home page
 app.get('/home', ifLoggedIn, (req, res) => {
     res.render('home');
 });
 
+// forgot password page
+app.get('/forgotpass', ifLoggedIn, (req, res) => {
+    res.render('forgotpass');
+});
+
+// logout back to home page
 app.post('/logout', (req, res) => {
     req.session = null
     res.redirect('/home')
@@ -80,7 +92,7 @@ app.get('/', ifNotLoggedIn, (req, res, next) => {
         });
 });
 
-
+// register
 app.post('/register', ifLoggedIn, [
     body('user_email', 'Invalid Email Address!').isEmail().custom((value) => {
         return dbConnection.query('SELECT email FROM users WHERE email = $1', [value])
@@ -122,6 +134,7 @@ app.post('/register', ifLoggedIn, [
     }
 });
 
+// login
 app.post('/login', ifLoggedIn, [
     body('user_email').custom((value) => {
         return dbConnection.query("SELECT email FROM users WHERE email = $1", [value])
@@ -221,6 +234,109 @@ app.get('/board/:id', ifNotLoggedIn, (req, res) => {
             console.error('Error fetching board details:', err);
             res.status(500).send('Error fetching board details');
         });
+});
+
+// forgotpassword
+app.post('/forgotpass', ifLoggedIn, [
+    body('user_email', 'Invalid Email Address!').isEmail().custom((value) => {
+        return dbConnection.query('SELECT email FROM users WHERE email = $1', [value])
+            .then(({ rows }) => {
+                if (rows.length === 0) {
+                    return Promise.reject('Email not found!');
+                }
+            });
+    })
+], (req, res) => {
+    const validation_result = validationResult(req);
+    const { user_email } = req.body;
+
+    if (validation_result.isEmpty()) {
+        const token = crypto.randomBytes(20).toString('hex');
+        const resetPasswordUrl = `http://localhost:3000/resetpass/${token}`;
+
+        // อัปเดต token ในฐานข้อมูล
+        dbConnection.query("UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE email = $3", [token, Date.now() + 3600000, user_email])
+            .then(() => {
+                // ส่งอีเมลรีเซ็ตรหัสผ่าน
+                const mailOptions = {
+                    to: user_email,
+                    from: 'admin@gmail.com',
+                    subject: 'Password Reset',
+                    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+                    Please click on the following link, or paste this into your browser to complete the process:\n\n
+                    ${resetPasswordUrl}\n\n
+                    If you did not request this, please ignore this email and your password will remain unchanged.\n`
+                };
+
+                transporter.sendMail(mailOptions, (err, response) => {
+                    if (err) {
+                        console.error('Error sending email:', err);
+                        res.status(500).send('Error sending email');
+                    } else {
+                        res.send('Password reset instructions have been sent to your email.');
+                    }
+                });
+            })
+            .catch(err => {
+                console.error('Error updating reset token:', err);
+                res.status(500).send('Error updating reset token');
+            });
+    } else {
+        let allErrors = validation_result.errors.map((error) => error.msg);
+        res.render('forgotpass', {
+            forgotpass_error: allErrors
+        });
+    }
+});
+
+// reset password
+app.get('/resetpass/:token', (req, res) => {
+    const token = req.params.token;
+    dbConnection.query("SELECT * FROM users WHERE reset_token = $1 AND reset_token_expiry > $2", [token, Date.now()])
+        .then(({ rows }) => {
+            if (rows.length > 0) {
+                res.render('resetpass', { token });
+            } else {
+                res.send('Password reset token is invalid or has expired.');
+            }
+        })
+        .catch(err => {
+            console.error('Error verifying reset token:', err);
+            res.status(500).send('Error verifying reset token');
+        });
+});
+
+// set New password
+app.post('/resetpass/:token', [
+    body('user_pass', 'The password must be at least 6 characters long').trim().isLength({ min: 6 })
+], (req, res) => {
+    const validation_result = validationResult(req);
+    const { user_pass } = req.body;
+    const token = req.params.token;
+
+    if (validation_result.isEmpty()) {
+        bcrypt.hash(user_pass, 12)
+            .then((hashedPassword) => {
+                dbConnection.query("UPDATE users SET password = $1, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = $2", [hashedPassword, token])
+                    .then(() => {
+                        res.send('Your password has been updated successfully. Now you can <a href="/login">Login</a>');
+                    })
+                    .catch(err => {
+                        console.error('Error updating password:', err);
+                        res.status(500).send('Error updating password');
+                    });
+            })
+            .catch(err => {
+                console.error('Error hashing password:', err);
+                res.status(500).send('Error hashing password');
+            });
+    } else {
+        let allErrors = validation_result.errors.map((error) => error.msg);
+        res.render('resetpass', {
+            resetpass_error: allErrors,
+            token
+        });
+    }
 });
 
 
