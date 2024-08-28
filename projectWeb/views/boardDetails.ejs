@@ -13,16 +13,71 @@
         <h1>Board Details</h1>
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title"><%= board.nameboard %></h5>
-                <p class="card-text">Email: <%= board.email %></p>
+                <h5 class="card-title">
+                    <%= board.nameboard %>
+                </h5>
                 <p class="card-text">Token: <%= board.token %></p>
+                <p class="card-text">
+                    Default Temp: 
+                    <% if (board.temp_default) { %>
+                        <%= board.temp_default.min %> - <%= board.temp_default.max %> °C
+                    <% } else { %>
+                        Not Set
+                    <% } %>
+                </p>                
+                <p id="temp-display-<%= board.token %>">Temp: <%= board.temp %> °C</p>
+                <p class="card-text">pH: <%= board.ph %></p>
+
+                <button id="up-<%= board.token %>" type="button" class="btn-danger">UP</button>
+                <button id="down-<%= board.token %>" type="button" class="btn-danger">DOWN</button>
+                <button id="set-<%= board.token %>" type="button" class="btn-danger">SET</button>
                 <a href="/" class="btn btn-primary">Back to Dash Board</a>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentTemp = <%= board.temp %>;
+
+            document.getElementById(`up-<%= board.token %>`).addEventListener('click', function () {
+                currentTemp++;
+                document.getElementById(`temp-display-<%= board.token %>`).textContent = `Temp: ${currentTemp} °C`;
+            });
+
+            document.getElementById(`down-<%= board.token %>`).addEventListener('click', function () {
+                currentTemp--;
+                document.getElementById(`temp-display-<%= board.token %>`).textContent = `Temp: ${currentTemp} °C`;
+            });
+
+            document.getElementById(`set-<%= board.token %>`).addEventListener('click', function () {
+                fetch(`/updateTemp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token: '<%= board.token %>', temp: currentTemp })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Temperature updated successfully!');
+                    } else {
+                        alert('Failed to update temperature');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to update temperature');
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>

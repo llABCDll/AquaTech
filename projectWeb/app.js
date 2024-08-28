@@ -188,10 +188,14 @@ app.post('/login', ifLoggedIn, [
 
 // createbtn
 app.post('/createboard', ifNotLoggedIn, (req, res) => {
-    const { nameboard, user_email, token } = req.body;
+    const { nameboard, user_email, token, temp_min, temp_max } = req.body;
+    const temp_default = JSON.stringify({ min: temp_min, max: temp_max });
+
+    console.log('Request Body:', req.body);
+
     dbConnection.query(
-        "INSERT INTO createbtn (nameboard, email, token) VALUES ($1, $2, $3)",
-        [nameboard, user_email, token]
+        "INSERT INTO createbtn (nameboard, email, token, temp_default) VALUES ($1, $2, $3, $4)",
+        [nameboard, user_email, token, temp_default]
     )
     .then(() => {
         res.redirect('/');
@@ -200,6 +204,37 @@ app.post('/createboard', ifNotLoggedIn, (req, res) => {
         console.error('Error inserting board:', err);
         res.status(500).send('Error creating board');
     });
+});
+
+// tempbtn
+app.post('/updateTemp', (req, res) => {
+    const { token, temp } = req.body;
+
+    dbConnection.query('UPDATE boards SET temp = $1 WHERE token = $2', [temp, token])
+        .then(() => {
+            res.status(200).send('Temperature updated');
+        })
+        .catch(err => {
+            console.error('Error updating temperature:', err);
+            res.status(500).send('Failed to update temperature');
+        });
+});
+
+//dashboard
+app.get('/dashboard', ifLoggedIn, (req, res) => {
+    const user_email = req.session.user.email;
+
+    dbConnection.query('SELECT id, nameboard, email, token, temp, ph FROM boards WHERE email = $1', [user_email])
+        .then(({ rows }) => {
+            res.render('dashboard', {
+                username: req.session.user.username,
+                boards: rows
+            });
+        })
+        .catch(err => {
+            console.error('Error fetching boards:', err);
+            res.status(500).send('Error fetching boards');
+        });
 });
 
 // deleteboard
@@ -238,11 +273,11 @@ app.get('/board/:id', ifNotLoggedIn, (req, res) => {
 
 // forgotpassword
 app.post('/forgotpass', ifLoggedIn, [
-    body('user_email', 'Invalid Email Address!').isEmail().custom((value) => {
+    body('user_email', 'ที่อยู่อีเมลไม่ถูกต้อง!').isEmail().custom((value) => {
         return dbConnection.query('SELECT email FROM users WHERE email = $1', [value])
             .then(({ rows }) => {
                 if (rows.length === 0) {
-                    return Promise.reject('Email not found!');
+                    return Promise.reject('ไม่พบอีเมล!');
                 }
             });
     })
@@ -261,25 +296,25 @@ app.post('/forgotpass', ifLoggedIn, [
                 const mailOptions = {
                     to: user_email,
                     from: 'admin@gmail.com',
-                    subject: 'Password Reset',
-                    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
-                    Please click on the following link, or paste this into your browser to complete the process:\n\n
+                    subject: 'รีเซ็ตรหัสผ่าน',
+                    text: `คุณได้รับอีเมลนี้เพราะคุณ (หรือคนอื่น) ได้ขอรีเซ็ตรหัสผ่านของบัญชีของคุณ\n\n
+                    โปรดคลิกลิงก์ต่อไปนี้ หรือวางลิงก์นี้ในเบราว์เซอร์ของคุณเพื่อดำเนินการให้เสร็จสมบูรณ์:\n\n
                     ${resetPasswordUrl}\n\n
-                    If you did not request this, please ignore this email and your password will remain unchanged.\n`
+                    หากคุณไม่ได้ขอสิ่งนี้ โปรดละเว้นอีเมลนี้ และรหัสผ่านของคุณจะยังคงไม่เปลี่ยนแปลง\n`
                 };
 
                 transporter.sendMail(mailOptions, (err, response) => {
                     if (err) {
-                        console.error('Error sending email:', err);
-                        res.status(500).send('Error sending email');
+                        console.error('ข้อผิดพลาดในการส่งอีเมล:', err);
+                        res.status(500).send('ข้อผิดพลาดในการส่งอีเมล');
                     } else {
-                        res.send('Password reset instructions have been sent to your email.');
+                        res.send('คำแนะนำการรีเซ็ตรหัสผ่านได้ถูกส่งไปยังอีเมลของคุณแล้ว');
                     }
                 });
             })
             .catch(err => {
-                console.error('Error updating reset token:', err);
-                res.status(500).send('Error updating reset token');
+                console.error('ข้อผิดพลาดในการอัปเดตโทเค็น:', err);
+                res.status(500).send('ข้อผิดพลาดในการอัปเดตโทเค็น');
             });
     } else {
         let allErrors = validation_result.errors.map((error) => error.msg);
@@ -297,18 +332,18 @@ app.get('/resetpass/:token', (req, res) => {
             if (rows.length > 0) {
                 res.render('resetpass', { token });
             } else {
-                res.send('Password reset token is invalid or has expired.');
+                res.send('โทเค็นการรีเซ็ตรหัสผ่านไม่ถูกต้องหรือหมดอายุแล้ว');
             }
         })
         .catch(err => {
-            console.error('Error verifying reset token:', err);
-            res.status(500).send('Error verifying reset token');
+            console.error('ข้อผิดพลาดในการยืนยันโทเค็น:', err);
+            res.status(500).send('ข้อผิดพลาดในการยืนยันโทเค็น');
         });
 });
 
 // set New password
 app.post('/resetpass/:token', [
-    body('user_pass', 'The password must be at least 6 characters long').trim().isLength({ min: 6 })
+    body('user_pass', 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร').trim().isLength({ min: 6 })
 ], (req, res) => {
     const validation_result = validationResult(req);
     const { user_pass } = req.body;
@@ -319,16 +354,16 @@ app.post('/resetpass/:token', [
             .then((hashedPassword) => {
                 dbConnection.query("UPDATE users SET password = $1, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = $2", [hashedPassword, token])
                     .then(() => {
-                        res.send('Your password has been updated successfully. Now you can <a href="/login">Login</a>');
+                        res.send('รหัสผ่านของคุณได้รับการอัปเดตเรียบร้อยแล้ว คุณสามารถ <a href="/login">เข้าสู่ระบบ</a> ได้แล้ว');
                     })
                     .catch(err => {
-                        console.error('Error updating password:', err);
-                        res.status(500).send('Error updating password');
+                        console.error('ข้อผิดพลาดในการอัปเดตรหัสผ่าน:', err);
+                        res.status(500).send('ข้อผิดพลาดในการอัปเดตรหัสผ่าน');
                     });
             })
             .catch(err => {
-                console.error('Error hashing password:', err);
-                res.status(500).send('Error hashing password');
+                console.error('ข้อผิดพลาดในการแฮชรหัสผ่าน:', err);
+                res.status(500).send('ข้อผิดพลาดในการแฮชรหัสผ่าน');
             });
     } else {
         let allErrors = validation_result.errors.map((error) => error.msg);
@@ -339,5 +374,53 @@ app.post('/resetpass/:token', [
     }
 });
 
+// สร้าง API สำหรับดึงข้อมูล token
+app.get('/api/token/:boardId', (req, res) => {
+    const boardId = req.params.boardId;
 
-app.listen(3000, () => console.log("Server is running..."));
+    pool.query('SELECT token FROM createbtn WHERE id = $1', [boardId])
+        .then(result => {
+            if (result.rows.length > 0) {
+                res.json({ token: result.rows[0].token });
+            } else {
+                res.status(404).send('Board not found');
+            }
+        })
+        .catch(err => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Error retrieving token');
+        });
+});
+
+// API สำหรับรับและบันทึกข้อมูลจาก ESP32
+app.post('/api/data', (req, res) => {
+    const { token, temperature, ph } = req.body;
+
+    // ตรวจสอบ token ว่าถูกต้องหรือไม่
+    pool.query('SELECT id FROM createbtn WHERE token = $1', [token])
+        .then(result => {
+            if (result.rows.length > 0) {
+                const boardId = result.rows[0].id;
+                // บันทึกข้อมูลลงในฐานข้อมูล
+                return pool.query(
+                    'INSERT INTO sensor_data (board_id, temperature, ph, timestamp) VALUES ($1, $2, $3, NOW())',
+                    [boardId, temperature, ph]
+                );
+            } else {
+                res.status(400).send('Invalid token');
+            }
+        })
+        .then(() => {
+            res.send('Data saved successfully');
+        })
+        .catch(err => {
+            console.error('Error executing query', err.stack);
+            res.status(500).send('Error saving data');
+        });
+});
+
+// เริ่มเซิร์ฟเวอร์
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
