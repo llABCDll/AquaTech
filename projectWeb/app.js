@@ -6,12 +6,20 @@ const dbConnection = require('./database');
 const { body, validationResult } = require('express-validator');
 const crypto = require('crypto');
 const transporter = require('./nodemailerConfig'); // ใช้ Nodemailer
+const bodyParser = require('body-parser');
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+// ใช้ body-parser เพื่อจัดการกับข้อมูล JSON ที่ส่งมาจาก POST
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Middleware สำหรับ JSON
+app.use(express.json());
 
 app.use(cookieSession({
     name: 'session',
@@ -187,23 +195,20 @@ app.post('/login', ifLoggedIn, [
 });
 
 // createbtn
-app.post('/createboard', ifNotLoggedIn, (req, res) => {
-    const { nameboard, user_email, token, temp_min, temp_max } = req.body;
-    const temp_default = JSON.stringify({ min: temp_min, max: temp_max });
+app.get('/dashboard', ifLoggedIn, (req, res) => {
+    const user_email = req.session.user.email;
 
-    console.log('Request Body:', req.body);
-
-    dbConnection.query(
-        "INSERT INTO createbtn (nameboard, email, token, temp_default) VALUES ($1, $2, $3, $4)",
-        [nameboard, user_email, token, temp_default]
-    )
-    .then(() => {
-        res.redirect('/');
-    })
-    .catch(err => {
-        console.error('Error inserting board:', err);
-        res.status(500).send('Error creating board');
-    });
+    dbConnection.query('SELECT id, nameboard, email, token, temp, ph FROM createbtn WHERE email = $1 ORDER BY id ASC', [user_email])
+        .then(({ rows }) => {
+            res.render('dashboard', {
+                username: req.session.user.username,
+                boards: rows
+            });
+        })
+        .catch(err => {
+            console.error('Error fetching boards:', err);
+            res.status(500).send('Error fetching boards');
+        });
 });
 
 // tempbtn
@@ -220,12 +225,13 @@ app.post('/updateTemp', (req, res) => {
         });
 });
 
-//dashboard
+// dashboard
 app.get('/dashboard', ifLoggedIn, (req, res) => {
     const user_email = req.session.user.email;
 
-    dbConnection.query('SELECT id, nameboard, email, token, temp, ph FROM boards WHERE email = $1', [user_email])
+    dbConnection.query('SELECT id, nameboard, email, token, temp, ph FROM createbtn WHERE email = $1 ORDER BY id ASC', [user_email])
         .then(({ rows }) => {
+            console.log(rows)
             res.render('dashboard', {
                 username: req.session.user.username,
                 boards: rows
@@ -236,6 +242,7 @@ app.get('/dashboard', ifLoggedIn, (req, res) => {
             res.status(500).send('Error fetching boards');
         });
 });
+
 
 // deleteboard
 app.post('/deleteboard', ifNotLoggedIn, (req, res) => {
@@ -392,30 +399,37 @@ app.get('/api/token/:boardId', (req, res) => {
         });
 });
 
-// API สำหรับรับและบันทึกข้อมูลจาก ESP32
+// api บันทึกค่า
 app.post('/api/data', (req, res) => {
-    const { token, temperature, ph } = req.body;
+    const { token, temp, ph } = req.body;
+    console.log(req.body);  // ตรวจสอบข้อมูลที่รับมา
+    
+    if (!token || temp === undefined || ph === undefined) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
 
-    // ตรวจสอบ token ว่าถูกต้องหรือไม่
-    pool.query('SELECT id FROM createbtn WHERE token = $1', [token])
+    dbConnection.query('SELECT id FROM createbtn WHERE token = $1', [token])
         .then(result => {
             if (result.rows.length > 0) {
                 const boardId = result.rows[0].id;
-                // บันทึกข้อมูลลงในฐานข้อมูล
-                return pool.query(
-                    'INSERT INTO sensor_data (board_id, temperature, ph, timestamp) VALUES ($1, $2, $3, NOW())',
-                    [boardId, temperature, ph]
+                return dbConnection.query(
+                    'UPDATE createbtn SET temp = $1, ph = $2, timestamp = NOW() WHERE id = $3',
+                    [temp, ph, boardId]
                 );
             } else {
-                res.status(400).send('Invalid token');
+                return Promise.reject({ status: 400, message: 'Invalid token' });
             }
         })
         .then(() => {
-            res.send('Data saved successfully');
+            res.status(200).send('Data updated successfully');
         })
         .catch(err => {
-            console.error('Error executing query', err.stack);
-            res.status(500).send('Error saving data');
+            if (err.status) {
+                res.status(err.status).send(err.message);
+            } else {
+                console.error('Error executing query', err.stack);
+                res.status(500).send('Error updating data');
+            }
         });
 });
 

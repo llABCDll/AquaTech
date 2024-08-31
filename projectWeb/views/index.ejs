@@ -61,60 +61,52 @@
         </div>
 
 
-        <!-- Display Boards -->
-        <div class="row mt-4">
-            <% if (boards && boards.length> 0) { %>
-                <% boards.forEach(board=> { %>
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <%= board.nameboard %>
-                                </h5>
-                                <p class="card-text">Token: <%= board.token %>
-                                </p>
-                                <p id="temp-display-<%= board.token %>">Temp: <%= board.temp %> °C</p>
-                                <p class="card-text">pH: <%= board.ph %>
-                                </p>
-                                <a href="/board/<%= board.id %>" class="btn btn-info">View Details</a>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#confirmDeleteModal-<%= board.id %>">
-                                    Delete
-                                </button>
-                                <!-- Confirm Delete Modal -->
-                                <div class="modal fade" id="confirmDeleteModal-<%= board.id %>" tabindex="-1"
-                                    aria-labelledby="confirmDeleteModalLabel-<%= board.id %>" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="confirmDeleteModalLabel-<%= board.id %>">
-                                                    Confirm Delete</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                คุณแน่ใจหรือว่าต้องการลบบอร์ด <%= board.nameboard %>?
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">ยกเลิก</button>
-                                                <form action="/deleteboard" method="post">
-                                                    <input type="hidden" name="board_id" value="<%= board.id %>">
-                                                    <button type="submit" class="btn btn-danger">ลบ</button>
-                                                </form>
-                                            </div>
-                                        </div>
+       <!-- Display Boards -->
+<div class="row mt-4">
+    <% if (boards && boards.length > 0) { %>
+        <% boards.forEach(board => { %>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <%= board.nameboard %>
+                        </h5>
+                        <p class="card-text">Token: <%= board.token %></p>
+                        <p id="temp-display-<%= board.token %>">Temp: <%= board.temp %> °C</p>
+                        <p class="card-text">pH: <%= board.ph %></p>
+                        <a href="/board/<%= board.id %>" class="btn btn-info">View Details</a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-<%= board.id %>">Delete</button>
+                        <!-- Confirm Delete Modal -->
+                        <div class="modal fade" id="confirmDeleteModal-<%= board.id %>" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-<%= board.id %>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmDeleteModalLabel-<%= board.id %>">Confirm Delete</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        คุณแน่ใจหรือว่าต้องการลบบอร์ด <%= board.nameboard %>?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                        <form action="/deleteboard" method="post">
+                                            <input type="hidden" name="board_id" value="<%= board.id %>">
+                                            <button type="submit" class="btn btn-danger">ลบ</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <% }) %>
-                        <% } else { %>
-                            <p>ยังไม่มีบอร์ดที่สร้าง</p>
-                            <% } %>
-        </div>
-    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>ยังไม่มีบอร์ดที่สร้าง</p>
+    <% } %>
+</div>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
@@ -150,6 +142,27 @@
 
         document.querySelector('[data-bs-target="#exampleModal"]').addEventListener('click', generateTokens);
     </script>
+
+<script>
+function updateBoardData(token, newTemp, newPh) {
+    const tempDisplay = document.getElementById(`temp-display-${token}`);
+    const phDisplay = document.getElementById(`ph-display-${token}`);
+
+    if (tempDisplay) {
+        tempDisplay.textContent = `Temp: ${newTemp} °C`;
+    }
+
+    if (phDisplay) {
+        phDisplay.textContent = `pH: ${newPh}`;
+    }
+}
+
+// ตัวอย่างการเรียกฟังก์ชันเมื่อได้รับข้อมูลใหม่
+updateBoardData('omxHybqpPcmwAOXLThZkTkFfa', '25.0', '7.0');
+
+</script>
+
+
 </body>
 
 </html>
