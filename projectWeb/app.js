@@ -30,7 +30,7 @@ app.use(cookieSession({
 // Middleware สำหรับตรวจสอบว่าผู้ใช้ยังไม่ได้ล็อกอิน
 const ifNotLoggedIn = (req, res, next) => {
     if (!req.session.isLoggedIn) {
-        res.redirect('/home'); // ถ้ายังไม่ได้ล็อกอิน ให้ redirect ไปที่หน้า '/login'
+        res.redirect('/home'); // ถ้ายังไม่ได้ล็อกอิน ให้ redirect ไปที่หน้า '/home'
     } else {
         next(); // ถ้าล็อกอินแล้ว ให้ดำเนินการต่อไป
     }
@@ -161,25 +161,25 @@ app.post('/login', ifLoggedIn, [
     if (validation_result.isEmpty()) {
         dbConnection.query("SELECT * FROM users WHERE email = $1", [user_email])
             .then((result) => {
-               
-                    bcrypt.compare(user_pass, result.rows[0].password)
-                        .then(compare_result => {
-                            if (compare_result === true) {
-                               req.session.isLoggedIn = true;
-                                req.session.userID = result.rows[0].id;
-                                
-                                res.redirect('/');
-                            } else {
-                                res.render('login', {
-                                    login_errors: ['Invalid Password']
-                                });
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Error comparing passwords:', err);
-                            res.status(500).send('Error comparing passwords');
-                        });
-                
+
+                bcrypt.compare(user_pass, result.rows[0].password)
+                    .then(compare_result => {
+                        if (compare_result === true) {
+                            req.session.isLoggedIn = true;
+                            req.session.userID = result.rows[0].id;
+
+                            res.redirect('/');
+                        } else {
+                            res.render('login', {
+                                login_errors: ['Invalid Password']
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error comparing passwords:', err);
+                        res.status(500).send('Error comparing passwords');
+                    });
+
             })
             .catch(err => {
                 console.error('Error selecting user:', err);
@@ -195,29 +195,40 @@ app.post('/login', ifLoggedIn, [
 });
 
 // createbtn
-app.get('/dashboard', ifLoggedIn, (req, res) => {
-    const user_email = req.session.user.email;
+app.post('/createboard', ifNotLoggedIn, (req, res) => {
+    const { nameboard, user_email, token, temp_min, temp_max } = req.body;
+    const temp_default = JSON.stringify({ min: temp_min, max: temp_max });
 
-    dbConnection.query('SELECT id, nameboard, email, token, temp, ph FROM createbtn WHERE email = $1 ORDER BY id ASC', [user_email])
-        .then(({ rows }) => {
-            res.render('dashboard', {
-                username: req.session.user.username,
-                boards: rows
-            });
+    console.log('Request Body:', req.body);
+
+    dbConnection.query(
+        "INSERT INTO createbtn (nameboard, email, token, temp_default) VALUES ($1, $2, $3, $4)",
+        [nameboard, user_email, token, temp_default]
+    )
+        .then(() => {
+            res.redirect('/');
         })
         .catch(err => {
-            console.error('Error fetching boards:', err);
-            res.status(500).send('Error fetching boards');
+            console.error('Error inserting board:', err);
+            res.status(500).send('Error creating board');
         });
 });
 
-// tempbtn
+// updateTemp
 app.post('/updateTemp', (req, res) => {
     const { token, temp } = req.body;
 
-    dbConnection.query('UPDATE boards SET temp = $1 WHERE token = $2', [temp, token])
+    console.log(req.body);
+
+    // Update the temperature in the 'createbtn' table
+    dbConnection.query('UPDATE createbtn SET temp = $1 WHERE token = $2', [temp, token])
         .then(() => {
-            res.status(200).send('Temperature updated');
+            // Fetch the updated data and order by id
+            return dbConnection.query('SELECT * FROM createbtn ORDER BY id ASC');
+        })
+        .then(result => {
+            // ส่งข้อมูลที่อัพเดตกลับไปยังหน้าเว็บหรือทำสิ่งที่ต้องการ
+            res.status(200).json(result.rows);
         })
         .catch(err => {
             console.error('Error updating temperature:', err);
@@ -229,9 +240,9 @@ app.post('/updateTemp', (req, res) => {
 app.get('/dashboard', ifLoggedIn, (req, res) => {
     const user_email = req.session.user.email;
 
-    dbConnection.query('SELECT id, nameboard, email, token, temp, ph FROM createbtn WHERE email = $1 ORDER BY id ASC', [user_email])
+    dbConnection.query('SELECT id, nameboard, email, token, temp, ph FROM createbtn WHERE email = $1 ORDER BY ABS(`id`) ASC', [user_email])
         .then(({ rows }) => {
-            console.log(rows)
+            console.log(rows);  // ตรวจสอบผลลัพธ์ที่ได้รับ
             res.render('dashboard', {
                 username: req.session.user.username,
                 boards: rows
@@ -243,20 +254,19 @@ app.get('/dashboard', ifLoggedIn, (req, res) => {
         });
 });
 
-
 // deleteboard
 app.post('/deleteboard', ifNotLoggedIn, (req, res) => {
     const { board_id } = req.body;
     dbConnection.query(
         "DELETE FROM createbtn WHERE id = $1", [board_id]
     )
-    .then(() => {
-        res.redirect('/');
-    })
-    .catch(err => {
-        console.error('Error deleting board:', err);
-        res.status(500).send('Error deleting board');
-    });
+        .then(() => {
+            res.redirect('/');
+        })
+        .catch(err => {
+            console.error('Error deleting board:', err);
+            res.status(500).send('Error deleting board');
+        });
 });
 
 // Route สำหรับแสดงรายละเอียดของบอร์ด
@@ -381,7 +391,7 @@ app.post('/resetpass/:token', [
     }
 });
 
-// สร้าง API สำหรับดึงข้อมูล token
+// API สำหรับดึงข้อมูล token
 app.get('/api/token/:boardId', (req, res) => {
     const boardId = req.params.boardId;
 
@@ -399,11 +409,11 @@ app.get('/api/token/:boardId', (req, res) => {
         });
 });
 
-// api บันทึกค่า
+// api บันทึกค่า temp, ph
 app.post('/api/data', (req, res) => {
     const { token, temp, ph } = req.body;
     console.log(req.body);  // ตรวจสอบข้อมูลที่รับมา
-    
+
     if (!token || temp === undefined || ph === undefined) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -431,6 +441,22 @@ app.post('/api/data', (req, res) => {
                 res.status(500).send('Error updating data');
             }
         });
+});
+
+// api ดึงข้อมูลจาก DB ที่เก็บมาจาก esp
+app.get('/api/boarddata', async (req, res) => {
+    const { date } = req.query;
+
+    try {
+        const result = await dbConnection.query(
+            'SELECT date, EXTRACT(HOUR FROM time) AS hour, AVG(temp) AS avg_temp, AVG(ph) AS avg_ph FROM sensor_data WHERE date = $1 GROUP BY date, EXTRACT(HOUR FROM time) ORDER BY hour',
+            [date]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching board data:', error);
+        res.status(500).send('Error fetching data');
+    }
 });
 
 // เริ่มเซิร์ฟเวอร์
