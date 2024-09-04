@@ -13,6 +13,8 @@ app.use(express.urlencoded({ extended: false }));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
+
 
 // ใช้ body-parser เพื่อจัดการกับข้อมูล JSON ที่ส่งมาจาก POST
 app.use(bodyParser.json());
