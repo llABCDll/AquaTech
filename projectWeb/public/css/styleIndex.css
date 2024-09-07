@@ -1,21 +1,117 @@
-.card-img-top {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+}
+
+body {
+    height: 100vh;
+    background-color: #d0d8d7dd;
+    /* background-image: url('/pic/background.jpg'); */
+    background-size: cover;
+    background-position: center;
 }
 
 h1 {
-    font-size: 20px;
-    margin-top: 20px;
-    margin-right: 20px;
+    margin: 0;
+    font-size: 1.5rem;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
+header {
+    padding: 0 2rem;
+}
+
+
+li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    font-size: 1rem;
+}
+
+a:hover {
+    color: #007BFF;
+}
+
+.container {
+    justify-content: center;
     align-items: center;
+    height: 100%;
+    background-color: #a9dce1;
+    border-radius: 20px;
+    padding: 43px;
+}
+
+
+.navbar {
+    flex-wrap: nowrap;
+    width: 100%;
+    height: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 20px;
     padding: 15px;
-    background-color: #cbc7c7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #ffffffe3;
+    backdrop-filter: blur(16px) saturate(120%);
+}
+
+
+.navbar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.logo img {
+    margin-top: 20px;
+    width: 250px;
+    height: auto;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    /* ช่องว่างระหว่าง Username กับปุ่ม Logout */
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    /* สีพื้นหลังปุ่ม */
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-primary {
+    position: absolute;
+    left: 1270px;
+    top: 120px;
+}
+
+.btn-primary-2{
+    background-color: #007BFF;
+    color: #fff;
+}
+
+.navbar .links {
+    display: flex;
+    gap: 2rem;
 }
 
 .logo a {
@@ -45,6 +141,4 @@ h1 {
 .link li a:hover {
     color: #007BFF;
 }
-.btn-primary {
-    margin-left: 1190px;
-}
+

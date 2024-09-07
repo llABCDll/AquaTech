@@ -3,105 +3,116 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Open Sans", sans-serif;
-}
-
-body {
+  }
+  
+  body {
     height: 100vh;
     background-color: #fff;
+    background-image: url('/pic/background.jpg');
     background-size: cover;
     background-position: center;
-}
-
-h1 {
+  }
+  
+  h1 {
     text-align: center;
-}
-
-.container {
+  }
+  
+  .container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-}
-
-li {
+  }
+  
+  li {
     list-style: none;
-}
-
-
-
-a {
+  }
+  
+  a {
     text-decoration: none;
     color: #000;
     font-size: 1rem;
-}
-
-a:hover {
+  }
+  
+  a:hover {
     color: #007BFF;
-}
-
-header {
-    position: relative;
+  }
+  
+  header {
     padding: 0 2rem;
-}
-
-.navbar {
+  }
+  
+  .navbar {
     width: 100%;
     height: 60px;
     max-width: 1200px;
     margin: 0 auto;
+    margin-top: 20px;
+    padding: 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.navbar .logo {
+    border-radius: 12px;
+    background: #fffffffe;
+    border: 1px solid #938e8e05;
+    backdrop-filter: blur(16px) saturate(120%);
+  }
+  
+  .navbar .logo {
     font-size: 1.5rem;
     font-weight: bold;
-}
-
-.navbar .links {
+    margin-top: 8px;
+  }
+  
+  .navbar .links {
     display: flex;
     gap: 2rem;
-}
-
-/* เอฟเฟกต์การแสดงผลค่อยๆ แสดง */
-.register-box {
+  }
+  
+  .navbar .logo img {
+    width: 250px; /* ปรับขนาดความกว้างของโลโก้ */
+    height: auto; /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
+  }
+  
+  
+  /* เอฟเฟกต์การแสดงผลค่อยๆ แสดง */
+  .register-box {
     width: 400px;
     padding: 30px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgb(255, 255, 255);
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     opacity: 0;
     animation: fadeIn 1s forwards;
-}
-
-/* เอ็ฟเฟ็กต์ Fade-in */
-@keyframes fadeIn {
+  }
+  
+  /* เอ็ฟเฟ็กต์ Fade-in */
+  @keyframes fadeIn {
     to {
-        opacity: 1;
+      opacity: 1;
     }
-}
-
-.login-box h1 {
+  }
+  
+  .register-box h1 {
     text-align: center;
     margin-bottom: 30px;
     color: #333;
     text-transform: uppercase;
     color: #6c757d;
-}
-
-.form-group {
+  }
+  
+  .form-group {
     margin-bottom: 25px;
-}
-
-.form-group label {
+  }
+  
+  .form-group label {
     display: block;
     margin-bottom: 10px;
     color: #555;
-}
-
-/* เปลี่ยนช่องกรอกข้อมูลให้เป็นเส้นใต้ */
-.form-control {
+  }
+  
+  /* เปลี่ยนช่องกรอกข้อมูลให้เป็นเส้นใต้ */
+  .form-control {
     width: 100%;
     padding: 12px;
     border: none;
@@ -111,13 +122,13 @@ header {
     background-color: transparent;
     outline: none;
     transition: border-color 0.3s;
-}
-
-.form-control:focus {
+  }
+  
+  .form-control:focus {
     border-bottom: 2px solid #007BFF;
-}
-
-.btn-primary {
+  }
+  
+  .btn-primary {
     background-color: #007BFF;
     border: none;
     border-radius: 20px;
@@ -127,29 +138,45 @@ header {
     width: 60%;
     margin: 0 auto;
     display: block;
-}
-
-
-.btn-primary:hover {
+  }
+  
+  
+  .btn-primary:hover {
     background-color: #0056b3;
-}
-
-.alert {
+  }
+  
+  .btn-link {
+    display: inline-block;
+    margin-top: 15px;
+    margin-left: 200px;
+    color: #007BFF;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .btn-link:hover {
+    text-decoration: underline;
+  }
+  
+  a.btn-link {
+    color: #555;
+  
+  }
+  
+  a.btn-link:hover {
+    color: #007BFF;
+  
+  }
+  
+  .alert {
     padding: 12px;
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
     border-radius: 8px;
     margin-bottom: 25px;
-}
-
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background-color: #fff;
   }
+  
   
   .logo a {
     color: #000;
@@ -178,4 +205,3 @@ header {
   .link li a:hover {
     color: #007BFF;
   }
-  

@@ -1,52 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/pic/apple-touch-icon.png"/>
+    <link rel="stylesheet" href="/css/styleResetpass.css" />
     <title>Reset Password</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <style>
-        .container {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .resetpass-box {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+
 </head>
+
 <body>
+    <header>
+        <div class="navbar">
+            <ul class="logo"><a href="/home"><img src="/pic/logo.png" alt="Project Logo"></a></ul>
+            <ul class="link">
+                <li><a href="/login">Sign In</a></li>
+                <li><a href="/register">Sign Up</a></li>
+            </ul>
+        </div>
+    </header>
     <div class="container">
         <div class="resetpass-box">
             <h1 class="text-center mb-5 text-uppercase text-muted">Reset Password</h1>
-            <form action="/resetpass/<%= token %>" method="post" novalidate>
+            <form action="/resetpass" method="post" novalidate>
+                <input type="hidden" name="token" value="<%= token %>"> <!-- ส่ง token ไปพร้อมกับฟอร์ม -->
                 <div class="form-group mt-2">
-                    <label for="_rpass">New Password</label>
-                    <input type="password" name="user_pass" id="_rpass" class="form-control" placeholder="New Password" required>
+                    <input type="password" name="user_pass" id="_rpass" class="form-control" placeholder="New Password"
+                        required>
                 </div>
-                <% if (locals.resetpass_error) {
-                    resetpass_error.forEach(function(resetpass_msg, index) { %>
-                        <div class="alert alert-danger" role="alert" id="alert-<%= index %>"><%= resetpass_msg %></div>
-                    <% })
-                } %>
-                <button type="submit" class="mt-2 btn btn-primary w-100">Update Password</button>
+                <% if (locals.resetpass_error) { resetpass_error.forEach(function(resetpass_msg, index) { %>
+                    <div class="alert alert-danger" role="alert" id="alert-<%= index %>">
+                        <%= resetpass_msg %>
+                    </div>
+                    <% }) } %>
+                        <button type="submit" class="mt-2 btn btn-primary w-100">Update Password</button>
             </form>
         </div>
     </div>
     <script>
         // ซ่อนข้อความแจ้งเตือนหลังจาก 3 วินาที
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(function (alert) {
                 alert.style.display = 'none';
             });
         }, 3000);
     </script>
 </body>
+
 </html>

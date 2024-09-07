@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const dbConnection = require('./database');
 const { body, validationResult } = require('express-validator');
 const crypto = require('crypto');
-const transporter = require('./nodemailerConfig'); // ใช้ Nodemailer
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -38,13 +37,21 @@ const ifNotLoggedIn = (req, res, next) => {
     }
 };
 
-
 const ifLoggedIn = (req, res, next) => {
     if (req.session.isLoggedIn) {
         return res.redirect('/');
     }
     next();
 };
+
+function generateRandomToken() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let token = '';
+    for (let i = 0; i < 25; i++) { // Token length is 25 characters
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return token;
+}
 
 // register page
 app.get('/register', ifLoggedIn, (req, res) => {
@@ -56,6 +63,12 @@ app.get('/login', ifLoggedIn, (req, res) => {
     res.render('login');
 });
 
+// logout back to home page
+app.post('/logout', (req, res) => {
+    req.session = null
+    res.redirect('/home')
+})
+
 // home page
 app.get('/home', ifLoggedIn, (req, res) => {
     res.render('home');
@@ -66,15 +79,20 @@ app.get('/forgotpass', ifLoggedIn, (req, res) => {
     res.render('forgotpass');
 });
 
-// logout back to home page
-app.post('/logout', (req, res) => {
-    req.session = null
-    res.redirect('/home')
-})
+// ดึง token จาก URL และส่งไป EJS
+app.get('/resetpass', (req, res) => {
+    const token = req.query.token; // หรือวิธีที่คุณส่ง token เข้ามา
+    if (token) {
+        res.render('resetpass', { token });
+    } else {
+        res.status(400).send('Token is missing');
+    }
+});
+
 
 
 app.get('/', ifNotLoggedIn, (req, res, next) => {
-    dbConnection.query("SELECT email FROM users WHERE id = $1", [req.session.userID])
+    dbConnection.query("SELECT email FROM users_iptcn WHERE id = $1", [req.session.userID])
         .then((result) => {
             if (result.rows.length > 0) {
                 const userEmail = result.rows[0].email;
@@ -105,7 +123,7 @@ app.get('/', ifNotLoggedIn, (req, res, next) => {
 // register
 app.post('/register', ifLoggedIn, [
     body('user_email', 'Invalid Email Address!').isEmail().custom((value) => {
-        return dbConnection.query('SELECT email FROM users WHERE email = $1', [value])
+        return dbConnection.query('SELECT email FROM users_iptcn WHERE email = $1', [value])
             .then(({ rows }) => {
                 if (rows.length > 0) {
                     return Promise.reject('Email already in use!');
@@ -121,7 +139,7 @@ app.post('/register', ifLoggedIn, [
     if (validation_result.isEmpty()) {
         bcrypt.hash(user_pass, 12)
             .then((hashedPassword) => {
-                dbConnection.query("INSERT INTO users (username, email, password) VALUES ($1, $2, $3)", [user_name, user_email, hashedPassword])
+                dbConnection.query("INSERT INTO users_iptcn (username, email, password) VALUES ($1, $2, $3)", [user_name, user_email, hashedPassword])
                     .then(() => {
                         res.send(`Your account has been created successfully. Now you can <a href="/">Login</a>`);
                     })
@@ -147,7 +165,7 @@ app.post('/register', ifLoggedIn, [
 // login
 app.post('/login', ifLoggedIn, [
     body('user_email').custom((value) => {
-        return dbConnection.query("SELECT email FROM users WHERE email = $1", [value])
+        return dbConnection.query("SELECT email FROM users_iptcn WHERE email = $1", [value])
             .then(({ rows }) => {
                 if (rows.length === 1) {
                     return true;
@@ -161,7 +179,7 @@ app.post('/login', ifLoggedIn, [
     const { user_pass, user_email } = req.body;
 
     if (validation_result.isEmpty()) {
-        dbConnection.query("SELECT * FROM users WHERE email = $1", [user_email])
+        dbConnection.query("SELECT * FROM users_iptcn WHERE email = $1", [user_email])
             .then((result) => {
 
                 bcrypt.compare(user_pass, result.rows[0].password)
@@ -290,10 +308,10 @@ app.get('/board/:id', ifNotLoggedIn, (req, res) => {
         });
 });
 
-// forgotpassword
+// forgot password 
 app.post('/forgotpass', ifLoggedIn, [
     body('user_email', 'ที่อยู่อีเมลไม่ถูกต้อง!').isEmail().custom((value) => {
-        return dbConnection.query('SELECT email FROM users WHERE email = $1', [value])
+        return dbConnection.query('SELECT email FROM users_iptcn WHERE email = $1', [value])
             .then(({ rows }) => {
                 if (rows.length === 0) {
                     return Promise.reject('ไม่พบอีเมล!');
@@ -305,35 +323,18 @@ app.post('/forgotpass', ifLoggedIn, [
     const { user_email } = req.body;
 
     if (validation_result.isEmpty()) {
-        const token = crypto.randomBytes(20).toString('hex');
-        const resetPasswordUrl = `http://localhost:3000/resetpass/${token}`;
+        // สร้าง token และจัดเก็บในฐานข้อมูล
+        const token = generateRandomToken(); // สร้าง token
 
-        // อัปเดต token ในฐานข้อมูล
-        dbConnection.query("UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE email = $3", [token, Date.now() + 3600000, user_email])
+        dbConnection.query('UPDATE users_iptcn SET reset_token = $1 WHERE email = $2', [token, user_email])
             .then(() => {
-                // ส่งอีเมลรีเซ็ตรหัสผ่าน
-                const mailOptions = {
-                    to: user_email,
-                    from: 'admin@gmail.com',
-                    subject: 'รีเซ็ตรหัสผ่าน',
-                    text: `คุณได้รับอีเมลนี้เพราะคุณ (หรือคนอื่น) ได้ขอรีเซ็ตรหัสผ่านของบัญชีของคุณ\n\n
-                    โปรดคลิกลิงก์ต่อไปนี้ หรือวางลิงก์นี้ในเบราว์เซอร์ของคุณเพื่อดำเนินการให้เสร็จสมบูรณ์:\n\n
-                    ${resetPasswordUrl}\n\n
-                    หากคุณไม่ได้ขอสิ่งนี้ โปรดละเว้นอีเมลนี้ และรหัสผ่านของคุณจะยังคงไม่เปลี่ยนแปลง\n`
-                };
-
-                transporter.sendMail(mailOptions, (err, response) => {
-                    if (err) {
-                        console.error('ข้อผิดพลาดในการส่งอีเมล:', err);
-                        res.status(500).send('ข้อผิดพลาดในการส่งอีเมล');
-                    } else {
-                        res.send('คำแนะนำการรีเซ็ตรหัสผ่านได้ถูกส่งไปยังอีเมลของคุณแล้ว');
-                    }
-                });
+                // ส่งอีเมลที่มีลิงก์รีเซ็ตรหัสผ่านให้กับผู้ใช้
+                // ตัวอย่าง: /resetpass?token=your_generated_token
+                res.render('resetpass', { email: user_email, token: token });
             })
             .catch(err => {
-                console.error('ข้อผิดพลาดในการอัปเดตโทเค็น:', err);
-                res.status(500).send('ข้อผิดพลาดในการอัปเดตโทเค็น');
+                console.error('ข้อผิดพลาดในการอัปเดต token:', err);
+                res.status(500).send('ข้อผิดพลาดในการอัปเดต token');
             });
     } else {
         let allErrors = validation_result.errors.map((error) => error.msg);
@@ -343,35 +344,18 @@ app.post('/forgotpass', ifLoggedIn, [
     }
 });
 
-// reset password
-app.get('/resetpass/:token', (req, res) => {
-    const token = req.params.token;
-    dbConnection.query("SELECT * FROM users WHERE reset_token = $1 AND reset_token_expiry > $2", [token, Date.now()])
-        .then(({ rows }) => {
-            if (rows.length > 0) {
-                res.render('resetpass', { token });
-            } else {
-                res.send('โทเค็นการรีเซ็ตรหัสผ่านไม่ถูกต้องหรือหมดอายุแล้ว');
-            }
-        })
-        .catch(err => {
-            console.error('ข้อผิดพลาดในการยืนยันโทเค็น:', err);
-            res.status(500).send('ข้อผิดพลาดในการยืนยันโทเค็น');
-        });
-});
 
-// set New password
-app.post('/resetpass/:token', [
+// set new password 
+app.post('/resetpass', [
     body('user_pass', 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร').trim().isLength({ min: 6 })
 ], (req, res) => {
     const validation_result = validationResult(req);
-    const { user_pass } = req.body;
-    const token = req.params.token;
+    const { user_pass, token } = req.body;
 
     if (validation_result.isEmpty()) {
         bcrypt.hash(user_pass, 12)
             .then((hashedPassword) => {
-                dbConnection.query("UPDATE users SET password = $1, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = $2", [hashedPassword, token])
+                dbConnection.query("UPDATE users_iptcn SET password = $1 WHERE reset_token = $2", [hashedPassword, token])
                     .then(() => {
                         res.send('รหัสผ่านของคุณได้รับการอัปเดตเรียบร้อยแล้ว คุณสามารถ <a href="/login">เข้าสู่ระบบ</a> ได้แล้ว');
                     })
@@ -388,10 +372,11 @@ app.post('/resetpass/:token', [
         let allErrors = validation_result.errors.map((error) => error.msg);
         res.render('resetpass', {
             resetpass_error: allErrors,
-            token
+            token: token // ส่ง token กลับไปให้หน้า EJS อีกครั้ง
         });
     }
 });
+
 
 // API สำหรับดึงข้อมูล token
 app.get('/api/token/:boardId', (req, res) => {
@@ -460,6 +445,44 @@ app.get('/api/boarddata', async (req, res) => {
         res.status(500).send('Error fetching data');
     }
 });
+
+// API สำหรับบันทึกข้อมูลจากเซ็นเซอร์โดยใช้ timestamp ของเซิร์ฟเวอร์
+app.post('/api/savedata', (req, res) => {
+    const { token, temp, ph, email } = req.body;
+
+    console.log(req.body);
+
+    // ตรวจสอบว่าข้อมูลครบถ้วนหรือไม่
+    if (!token || temp === undefined || ph === undefined || !email) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // ตรวจสอบ token และ email และแทรกข้อมูลใหม่พร้อม timestamp จากเซิร์ฟเวอร์
+    dbConnection.query('SELECT id FROM createbtn WHERE token = $1 AND email = $2', [token, email])
+        .then(result => {
+            if (result.rows.length > 0) {
+                const boardId = result.rows[0].id;
+                return dbConnection.query(
+                    'INSERT INTO sensor_data (board_id, temp, ph, email, token, timestamp) VALUES ($1, $2, $3, $4, $5, NOW())',
+                    [boardId, temp, ph, email, token]
+                );
+            } else {
+                return Promise.reject({ status: 400, message: 'Invalid token or email' });
+            }
+        })
+        .then(() => {
+            res.status(200).send('Data inserted successfully');
+        })
+        .catch(err => {
+            if (err.status) {
+                res.status(err.status).send(err.message);
+            } else {
+                console.error('Error executing query', err.stack);
+                res.status(500).send('Error inserting data');
+            }
+        });
+});
+
 
 // เริ่มเซิร์ฟเวอร์
 const PORT = process.env.PORT || 3000;

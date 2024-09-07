@@ -69,11 +69,17 @@
     gap: 2rem;
   }
   
+  .navbar .logo img {
+    width: 250px; /* ปรับขนาดความกว้างของโลโก้ */
+    height: auto; /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
+  }
+  
+
   /* เอฟเฟกต์การแสดงผลค่อยๆ แสดง */
-  .login-box {
+  .resetpass-box {
     width: 400px;
     padding: 30px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgb(255, 255, 255);
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     opacity: 0;
@@ -87,7 +93,7 @@
     }
   }
   
-  .login-box h1 {
+  .resetpass-box h1 {
     text-align: center;
     margin-bottom: 30px;
     color: #333;
@@ -171,12 +177,7 @@
     margin-bottom: 25px;
   }
   
-
-  .navbar .logo img {
-    width: 250px; /* ปรับขนาดความกว้างของโลโก้ */
-    height: auto; /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
-}
-
+  
   .logo a {
     color: #000;
     font-size: 24px;
@@ -204,5 +205,3 @@
   .link li a:hover {
     color: #007BFF;
   }
-  
-  

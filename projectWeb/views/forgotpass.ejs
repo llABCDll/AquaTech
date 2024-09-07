@@ -4,31 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <style>
-        .container {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .forgotpass-box {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="/css/styleForgotpass.css" />
+    <link rel="icon" type="image/x-icon" href="/pic/apple-touch-icon.png"/>
 </head>
 <body>
+    <header>
+        <div class="navbar">
+            <ul class="logo"><a href="/home"><img src="/pic/logo.png" alt="Project Logo"></a></ul>
+            <ul class="link">
+                <li><a href="/login">Sign In</a></li>
+                <li><a href="/register">Sign Up</a></li>
+            </ul>
+        </div>
+    </header>
     <div class="container">
         <div class="forgotpass-box">
             <h1 class="text-center mb-5 text-uppercase text-muted">Forgot Password</h1>
             <form action="/forgotpass" method="post" novalidate>
                 <div class="form-group mt-2">
-                    <label for="_remail">Email</label>
                     <input type="email" name="user_email" id="_remail" class="form-control" placeholder="Email" required>
                 </div>
                 <% if (locals.forgotpass_error) {

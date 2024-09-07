@@ -8,6 +8,7 @@
 body {
   height: 100vh;
   background-color: #fff;
+  background-image: url('/pic/background.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -38,7 +39,6 @@ a:hover {
 }
 
 header {
-  position: center;
   padding: 0 2rem;
 }
 
@@ -47,14 +47,21 @@ header {
   height: 60px;
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 20px;
+  padding: 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: 12px;
+  background: #fffffffe;
+  border: 1px solid #938e8e05;
+  backdrop-filter: blur(16px) saturate(120%);
 }
 
 .navbar .logo {
   font-size: 1.5rem;
   font-weight: bold;
+  margin-top: 8px;
 }
 
 .navbar .links {
@@ -62,11 +69,17 @@ header {
   gap: 2rem;
 }
 
+.navbar .logo img {
+  width: 250px; /* ปรับขนาดความกว้างของโลโก้ */
+  height: auto; /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
+}
+
+
 /* เอฟเฟกต์การแสดงผลค่อยๆ แสดง */
 .login-box {
   width: 400px;
   padding: 30px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgb(255, 255, 255);
   border-radius: 15px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   opacity: 0;
@@ -162,14 +175,6 @@ a.btn-link:hover {
   border: 1px solid #f5c6cb;
   border-radius: 8px;
   margin-bottom: 25px;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  background-color: #fff;
 }
 
 .logo a {
