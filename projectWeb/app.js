@@ -6,6 +6,10 @@ const dbConnection = require('./database');
 const { body, validationResult } = require('express-validator');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
+const { timeStamp } = require('console');
+const moment = require('moment-timezone');
+
+const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
@@ -88,8 +92,6 @@ app.get('/resetpass', (req, res) => {
         res.status(400).send('Token is missing');
     }
 });
-
-
 
 app.get('/', ifNotLoggedIn, (req, res, next) => {
     dbConnection.query("SELECT email FROM users_iptcn WHERE id = $1", [req.session.userID])
@@ -222,7 +224,7 @@ app.post('/createboard', ifNotLoggedIn, (req, res) => {
     console.log('Request Body:', req.body);
 
     dbConnection.query(
-        "INSERT INTO createbtn (nameboard, email, token, temp_default) VALUES ($1, $2, $3, $4)",
+        "INSERT INTO createbtn (nameboard, email, token, temp_default, timestamp) VALUES ($1, $2, $3, $4, NOW())",
         [nameboard, user_email, token, temp_default]
     )
         .then(() => {
@@ -277,6 +279,7 @@ app.get('/dashboard', ifLoggedIn, (req, res) => {
 // deleteboard
 app.post('/deleteboard', ifNotLoggedIn, (req, res) => {
     const { board_id } = req.body;
+    console.log(req.body);
     dbConnection.query(
         "DELETE FROM createbtn WHERE id = $1", [board_id]
     )
@@ -344,7 +347,6 @@ app.post('/forgotpass', ifLoggedIn, [
     }
 });
 
-
 // set new password 
 app.post('/resetpass', [
     body('user_pass', 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร').trim().isLength({ min: 6 })
@@ -377,7 +379,6 @@ app.post('/resetpass', [
     }
 });
 
-
 // API สำหรับดึงข้อมูล token
 app.get('/api/token/:boardId', (req, res) => {
     const boardId = req.params.boardId;
@@ -396,57 +397,73 @@ app.get('/api/token/:boardId', (req, res) => {
         });
 });
 
-// api บันทึกค่า temp, ph
+// api บันทึกค่า temp, ph และ เก็บข้อมูลทุกๆ 1 ชม.
 app.post('/api/data', (req, res) => {
     const { token, temp, ph } = req.body;
-    console.log(req.body);  // ตรวจสอบข้อมูลที่รับมา
 
+    console.log(req.body); // ตรวจสอบข้อมูลที่รับมา
+
+    // ตรวจสอบว่าข้อมูลครบถ้วนหรือไม่
     if (!token || temp === undefined || ph === undefined) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
+
+    // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
+    const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
 
     dbConnection.query('SELECT id FROM createbtn WHERE token = $1', [token])
         .then(result => {
             if (result.rows.length > 0) {
                 const boardId = result.rows[0].id;
-                return dbConnection.query(
+
+                // อัปเดต temp และ ph ใน createbtn
+                const updateCreateBtnQuery = dbConnection.query(
                     'UPDATE createbtn SET temp = $1, ph = $2, timestamp = NOW() WHERE id = $3',
                     [temp, ph, boardId]
                 );
+
+                // ตรวจสอบข้อมูลล่าสุดที่บันทึกใน sensor_data ว่าผ่านไปแล้ว 1 ชั่วโมงหรือไม่
+                const checkLastInsertQuery = dbConnection.query(
+                    `SELECT timestamp FROM sensor_data 
+                     WHERE token = $1 
+                     ORDER BY timestamp DESC LIMIT 1`,
+                    [token]
+                );
+
+                return Promise.all([updateCreateBtnQuery, checkLastInsertQuery]);
             } else {
                 return Promise.reject({ status: 400, message: 'Invalid token' });
             }
         })
+        .then(results => {
+            const lastInsertTimestamp = results[1].rows[0]?.timestamp;
+            const currentMoment = moment(currentTimestamp);
+
+            // ถ้าไม่มีข้อมูลล่าสุด หรือข้อมูลล่าสุดเกินกว่า 1 ชั่วโมงแล้ว
+            if (!lastInsertTimestamp || currentMoment.diff(moment(lastInsertTimestamp), 'hours') >= 1) {
+                // แทรกข้อมูลลงใน sensor_data
+                return dbConnection.query(
+                    'INSERT INTO sensor_data (temp, ph, token, timestamp) VALUES ($1, $2, $3, $4)',
+                    [temp, ph, token, currentTimestamp]
+                );
+            } else {
+                return Promise.resolve(); // ถ้าไม่ถึง 1 ชั่วโมง ไม่ต้องแทรกข้อมูลใหม่
+            }
+        })
         .then(() => {
-            res.status(200).send('Data updated successfully');
+            res.status(200).send('Data updated successfully, sensor data recorded if passed 1 hour');
         })
         .catch(err => {
             if (err.status) {
                 res.status(err.status).send(err.message);
             } else {
                 console.error('Error executing query', err.stack);
-                res.status(500).send('Error updating data');
+                res.status(500).send('Error updating or inserting data');
             }
         });
 });
 
-// api ดึงข้อมูลจาก DB ที่เก็บมาจาก esp
-app.get('/api/boarddata', async (req, res) => {
-    const { date } = req.query;
-
-    try {
-        const result = await dbConnection.query(
-            'SELECT date, EXTRACT(HOUR FROM time) AS hour, AVG(temp) AS avg_temp, AVG(ph) AS avg_ph FROM sensor_data WHERE date = $1 GROUP BY date, EXTRACT(HOUR FROM time) ORDER BY hour',
-            [date]
-        );
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching board data:', error);
-        res.status(500).send('Error fetching data');
-    }
-});
-
-// API สำหรับบันทึกข้อมูลจากเซ็นเซอร์โดยใช้ timestamp ของเซิร์ฟเวอร์
+// api บันทึกค่า temp, ph เก็บข้อมูลทุกๆ 1 ชม.
 app.post('/api/savedata', (req, res) => {
     const { token, temp, ph, email } = req.body;
 
@@ -457,14 +474,17 @@ app.post('/api/savedata', (req, res) => {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // กำหนดเวลาในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
+    const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+
     // ตรวจสอบ token และ email และแทรกข้อมูลใหม่พร้อม timestamp จากเซิร์ฟเวอร์
     dbConnection.query('SELECT id FROM createbtn WHERE token = $1 AND email = $2', [token, email])
         .then(result => {
             if (result.rows.length > 0) {
                 const boardId = result.rows[0].id;
                 return dbConnection.query(
-                    'INSERT INTO sensor_data (board_id, temp, ph, email, token, timestamp) VALUES ($1, $2, $3, $4, $5, NOW())',
-                    [boardId, temp, ph, email, token]
+                    'INSERT INTO sensor_data (temp, ph, email, token, timestamp) VALUES ($1, $2, $3, $4, $5)',
+                    [temp, ph, email, token, currentTimestamp]
                 );
             } else {
                 return Promise.reject({ status: 400, message: 'Invalid token or email' });
@@ -481,6 +501,27 @@ app.post('/api/savedata', (req, res) => {
                 res.status(500).send('Error inserting data');
             }
         });
+});
+
+// แสดงกราฟ
+app.get('/getHourlyData', async (req, res) => {
+    const { token } = req.query; // รับค่า token จาก query parameter
+    const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+
+    try {
+        const result = await dbConnection.query(`
+            SELECT TO_TIMESTAMP(timestamp, 'YYYY-MM-DD HH24:MI:SS') AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS timestamp, temp, ph 
+            FROM sensor_data 
+            WHERE token = $1
+            AND TO_TIMESTAMP(timestamp, 'YYYY-MM-DD HH24:MI:SS') AT TIME ZONE 'UTC' >= $2::timestamp - INTERVAL '1 day'
+            ORDER BY TO_TIMESTAMP(timestamp, 'YYYY-MM-DD HH24:MI:SS') AT TIME ZONE 'UTC' ASC
+        `, [token, currentTimestamp]);
+
+        res.json(result.rows); // ส่งผลลัพธ์กลับในรูปแบบ JSON
+    } catch (error) {
+        console.error('Error fetching hourly data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 
