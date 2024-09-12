@@ -6,16 +6,20 @@
 }
 
 body {
-    height: 100vh;
+    height: 100hv;
     background-color: #d0d8d7dd;
-    /* background-image: url('/pic/background.jpg'); */
-    background-size: cover;
+    background-image: url('/pic/background1.jpg');
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     background-position: center;
+
 }
 
 h1 {
     margin: 0;
     font-size: 1.5rem;
+    color: #fff;
 }
 
 header {
@@ -40,9 +44,12 @@ a:hover {
 .container {
     justify-content: center;
     align-items: center;
-    height: 100%;
-    background-color: #a9dce1;
+    height: auto;
+    box-shadow: 0 0px 20px 0 rgba(255, 255, 255, 0.738), 0 6px 20px 0 rgba(255, 255, 255, 0.568);
     border-radius: 20px;
+    background: #0000007f;
+    border: 1px solid #ffffff20;
+    /* backdrop-filter: blur(16px) saturate(120%); */
     padding: 43px;
 }
 
@@ -58,12 +65,35 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-radius: 12px;
-    background: #ffffff;
-    border: 1px solid #ffffffe3;
+    border-radius: 20px;
+    background: #ffffff1a;
+    border: 1px solid #ffffff20;
     backdrop-filter: blur(16px) saturate(120%);
 }
 
+.dropdown_menu {
+    display: none;
+    position: absolute;
+    right: 2rem;
+    top: 60px;
+    width: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: height .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dropdown_menu.open {
+    height: 240px;
+}
+
+.dropdown_menu li {
+    position: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .navbar .logo {
     font-size: 1.5rem;
@@ -71,7 +101,7 @@ a:hover {
 }
 
 .logo img {
-    margin-top: 20px;
+    margin-top: 8px;
     width: 250px;
     height: auto;
 }
@@ -104,7 +134,7 @@ a:hover {
     top: 120px;
 }
 
-.btn-primary-2{
+.btn-primary-2 {
     background-color: #007BFF;
     color: #fff;
 }
@@ -133,7 +163,7 @@ a:hover {
 }
 
 .link li a {
-    color: #000;
+    color: #fff;
     text-decoration: none;
     font-size: 18px;
 }
@@ -142,3 +172,114 @@ a:hover {
     color: #007BFF;
 }
 
+.card-body {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+/* CSS เดิมที่คุณมีไว้แล้ว จะยังทำงานบนหน้าจอปกติ */
+
+@media (max-width: 768px) {
+
+    /* ปรับให้เหมาะสมกับหน้าจอมือถือ */
+    body {
+        background-size: cover;
+        background-position: center;
+        padding: 10px;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        /* เปลี่ยนการจัดวางเป็น wrap */
+        height: auto;
+        padding: 10px;
+        justify-content: center;
+        /* จัดให้อยู่ตรงกลาง */
+    }
+
+    .logo img {
+        width: 180px;
+        /* ลดขนาดโลโก้ */
+    }
+
+    .links {
+        flex-direction: column;
+        /* จัดลิงก์เป็นคอลัมน์ */
+        gap: 1rem;
+        padding: 10px 0;
+    }
+
+    .btn-primary {
+        left: auto;
+        top: auto;
+        position: static;
+        /* ปรับตำแหน่งให้ไม่ใช้ absolute บนอุปกรณ์มือถือ */
+        margin: 10px 0;
+        width: 100%;
+        /* ปรับปุ่มให้มีขนาดเต็มกว้าง */
+    }
+
+    .container {
+        width: 100%;
+        padding: 20px;
+        border-radius: 12px;
+        /* ลดการโค้งของขอบ */
+    }
+
+    h1 {
+        font-size: 1.2rem;
+        /* ปรับขนาดฟอนต์ของหัวเรื่องให้เล็กลง */
+    }
+
+    .link li {
+        margin-left: 0;
+        /* ลบระยะห่างของลิงก์ในแต่ละรายการ */
+    }
+
+    .link {
+        flex-direction: column;
+        /* เปลี่ยนการจัดวางของลิงก์เป็นคอลัมน์ */
+    }
+}
+
+@media (max-width: 576px) {
+
+    /* สำหรับหน้าจอที่เล็กกว่า */
+    .navbar {
+        padding: 5px;
+        height: auto;
+    }
+
+    .logo img {
+        width: 150px;
+        /* ลดขนาดโลโก้ให้เล็กลงอีก */
+    }
+
+    .btn-primary {
+        padding: 10px;
+        font-size: 14px;
+        /* ลดขนาดฟอนต์ในปุ่ม */
+    }
+
+    .container {
+        padding: 15px;
+        border-radius: 10px;
+        /* ลดความโค้งของขอบให้มากขึ้น */
+    }
+
+    h1 {
+        font-size: 1rem;
+        /* ขนาดของหัวเรื่องจะเล็กลงอีก */
+    }
+
+    .link {
+        gap: 1rem;
+        /* ลดช่องว่างระหว่างลิงก์ */
+    }
+
+    .btn-danger {
+        width: 100%;
+        /* ปรับปุ่มให้ขนาดเต็มจอ */
+        text-align: center;
+        /* จัดข้อความในปุ่มให้อยู่ตรงกลาง */
+    }
+}

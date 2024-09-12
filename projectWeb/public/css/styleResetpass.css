@@ -1,207 +1,298 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Open Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Open Sans", sans-serif;
+}
+
+body {
+  height: 100vh;
+  background-color: #fff;
+  background-image: url('/pic/background.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+  font-size: 1rem;
+}
+
+a:hover {
+  color: #007BFF;
+}
+
+header {
+  padding: 0 2rem;
+}
+
+.navbar {
+  width: 100%;
+  height: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: 20px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 20px;
+  background: #ffffff1a;
+  border: 1px solid #ffffff20;
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.navbar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar .links {
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar .logo img {
+  width: 250px;
+  /* ปรับขนาดความกว้างของโลโก้ */
+  height: auto;
+  /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
+}
+
+
+/* เอฟเฟกต์การแสดงผลค่อยๆ แสดง */
+.resetpass-box {
+  width: 400px;
+  padding: 30px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+/* เอ็ฟเฟ็กต์ Fade-in */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
   }
+}
+
+.resetpass-box h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* เปลี่ยนช่องกรอกข้อมูลให้เป็นเส้นใต้ */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  border-radius: 0;
+  box-sizing: border-box;
+  background-color: transparent;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  border-bottom: 2px solid #007BFF;
+}
+
+.btn-primary {
+  background-color: #007BFF;
+  border: none;
+  border-radius: 20px;
+  color: #fff;
+  padding: 12px;
+  cursor: pointer;
+  width: 60%;
+  margin: 0 auto;
+  display: block;
+}
+
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-link {
+  display: inline-block;
+  margin-top: 15px;
+  margin-left: 200px;
+  color: #007BFF;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+a.btn-link {
+  color: #555;
+
+}
+
+a.btn-link:hover {
+  color: #007BFF;
+
+}
+
+.alert {
+  padding: 12px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+
+.logo a {
+  color: #000;
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.link {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.link li {
+  margin-left: 20px;
+}
+
+.link li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.link li a:hover {
+  color: #007BFF;
+}
+
+/* CSS เดิมที่คุณมีไว้แล้ว จะยังทำงานบนหน้าจอปกติ */
+
+@media (max-width: 768px) {
+  /* ปรับให้เหมาะสมกับหน้าจอมือถือ */
   
   body {
-    height: 100vh;
-    background-color: #fff;
-    background-image: url('/pic/background.jpg');
-    background-size: cover;
-    background-position: center;
+      background-size: cover;
+      background-position: center;
+      padding: 10px;
   }
-  
-  h1 {
-    text-align: center;
-  }
-  
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-  
-  li {
-    list-style: none;
-  }
-  
-  a {
-    text-decoration: none;
-    color: #000;
-    font-size: 1rem;
-  }
-  
-  a:hover {
-    color: #007BFF;
-  }
-  
-  header {
-    padding: 0 2rem;
-  }
-  
-  .navbar {
-    width: 100%;
-    height: 60px;
-    max-width: 1200px;
-    margin: 0 auto;
-    margin-top: 20px;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 12px;
-    background: #fffffffe;
-    border: 1px solid #938e8e05;
-    backdrop-filter: blur(16px) saturate(120%);
-  }
-  
-  .navbar .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-top: 8px;
-  }
-  
-  .navbar .links {
-    display: flex;
-    gap: 2rem;
-  }
-  
-  .navbar .logo img {
-    width: 250px; /* ปรับขนาดความกว้างของโลโก้ */
-    height: auto; /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
-  }
-  
 
-  /* เอฟเฟกต์การแสดงผลค่อยๆ แสดง */
-  .resetpass-box {
-    width: 400px;
-    padding: 30px;
-    background-color: rgb(255, 255, 255);
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    opacity: 0;
-    animation: fadeIn 1s forwards;
+  h1, h3 {
+      font-size: 28px; /* ปรับขนาดฟอนต์ของหัวข้อให้เล็กลง */
+      margin-bottom: 10px;
   }
-  
-  /* เอ็ฟเฟ็กต์ Fade-in */
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-    }
+
+  p {
+      font-size: 16px; /* ปรับขนาดฟอนต์ของพารากราฟให้เล็กลง */
   }
-  
-  .resetpass-box h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #333;
-    text-transform: uppercase;
-    color: #6c757d;
+
+  .navbar {
+      flex-direction: column; /* จัดให้อยู่ในคอลัมน์เมื่อหน้าจอเล็กลง */
+      height: auto;
+      padding: 10px;
+      justify-content: center;
   }
-  
-  .form-group {
-    margin-bottom: 25px;
+
+  .navbar .logo img {
+      width: 150px; /* ลดขนาดโลโก้ */
   }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 10px;
-    color: #555;
+
+  .navbar .links {
+      flex-direction: column; /* จัดลิงก์เป็นคอลัมน์ */
+      gap: 1rem;
   }
-  
-  /* เปลี่ยนช่องกรอกข้อมูลให้เป็นเส้นใต้ */
-  .form-control {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-bottom: 2px solid #ccc;
-    border-radius: 0;
-    box-sizing: border-box;
-    background-color: transparent;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  
-  .form-control:focus {
-    border-bottom: 2px solid #007BFF;
-  }
-  
+
   .btn-primary {
-    background-color: #007BFF;
-    border: none;
-    border-radius: 20px;
-    color: #fff;
-    padding: 12px;
-    cursor: pointer;
-    width: 60%;
-    margin: 0 auto;
-    display: block;
+      width: 100%; /* ปรับขนาดปุ่มให้เต็มจอ */
+      padding: 10px;
+      font-size: 16px; /* ลดขนาดฟอนต์ในปุ่ม */
   }
-  
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
+
+  .container {
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px; /* ลดความโค้งของขอบ */
   }
-  
-  .btn-link {
-    display: inline-block;
-    margin-top: 15px;
-    margin-left: 200px;
-    color: #007BFF;
-    text-decoration: none;
-    cursor: pointer;
+
+  .footer {
+      padding: 10px;
+      font-size: 14px; /* ลดขนาดฟอนต์ของ footer */
   }
+}
+
+@media (max-width: 576px) {
+  /* สำหรับหน้าจอที่เล็กกว่า */
   
-  .btn-link:hover {
-    text-decoration: underline;
+  h1, h3 {
+      font-size: 24px; /* ลดขนาดฟอนต์ของหัวข้อให้น้อยลงอีก */
   }
-  
-  a.btn-link {
-    color: #555;
-  
+
+  p {
+      font-size: 14px; /* ขนาดฟอนต์ของพารากราฟเล็กลงอีก */
   }
-  
-  a.btn-link:hover {
-    color: #007BFF;
-  
+
+  .navbar {
+      padding: 5px;
+      height: auto;
   }
-  
+
+  .navbar .logo img {
+      width: 120px; /* ลดขนาดโลโก้ให้เล็กลงอีก */
+  }
+
+  .btn-primary {
+      padding: 10px;
+      font-size: 14px; /* ขนาดของฟอนต์ในปุ่มเล็กลง */
+  }
+
+  .footer {
+      padding: 8px;
+      font-size: 12px; /* ลดขนาดฟอนต์ของ footer */
+  }
+
   .alert {
-    padding: 12px;
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 8px;
-    margin-bottom: 25px;
+      font-size: 12px; /* ลดขนาดฟอนต์ในข้อความแจ้งเตือน */
+      padding: 10px;
   }
-  
-  
-  .logo a {
-    color: #000;
-    font-size: 24px;
-    font-weight: bold;
-    text-decoration: none;
-  }
-  
-  .link {
-    list-style: none;
-    display: flex;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .link li {
-    margin-left: 20px;
-  }
-  
-  .link li a {
-    color: #000;
-    text-decoration: none;
-    font-size: 18px;
-  }
-  
-  .link li a:hover {
-    color: #007BFF;
-  }
+}

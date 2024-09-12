@@ -52,16 +52,15 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 12px;
-  background: #fffffffe;
-  border: 1px solid #938e8e05;
+  border-radius: 20px;
+  background: #ffffff1a;
+  border: 1px solid #ffffff20;
   backdrop-filter: blur(16px) saturate(120%);
 }
 
 .navbar .logo {
   font-size: 1.5rem;
   font-weight: bold;
-  margin-top: 8px;
 }
 
 .navbar .links {
@@ -70,8 +69,10 @@ header {
 }
 
 .navbar .logo img {
-  width: 250px; /* ปรับขนาดความกว้างของโลโก้ */
-  height: auto; /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
+  width: 250px;
+  /* ปรับขนาดความกว้างของโลโก้ */
+  height: auto;
+  /* ปรับความสูงโดยอัตโนมัติ เพื่อรักษาสัดส่วน */
 }
 
 
@@ -196,11 +197,119 @@ a.btn-link:hover {
 }
 
 .link li a {
-  color: #000;
+  color: #fff;
   text-decoration: none;
   font-size: 18px;
 }
 
 .link li a:hover {
   color: #007BFF;
+}
+
+/* CSS เดิมที่คุณมีไว้แล้ว จะยังทำงานบนหน้าจอปกติ */
+
+@media (max-width: 768px) {
+  /* ปรับให้เหมาะสมกับหน้าจอมือถือ */
+
+  body {
+    background-size: cover;
+    background-position: center;
+    padding: 10px;
+  }
+
+  h1,
+  h3 {
+    font-size: 28px;
+    /* ปรับขนาดฟอนต์ของหัวข้อให้เล็กลง */
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 16px;
+    /* ปรับขนาดฟอนต์ของพารากราฟให้เล็กลง */
+  }
+
+  .navbar {
+    flex-direction: column;
+    /* จัดให้อยู่ในคอลัมน์เมื่อหน้าจอเล็กลง */
+    height: auto;
+    padding: 10px;
+    justify-content: center;
+  }
+
+  .navbar .logo img {
+    width: 150px;
+    /* ลดขนาดโลโก้ */
+  }
+
+  .navbar .links {
+    flex-direction: column;
+    /* จัดลิงก์เป็นคอลัมน์ */
+    gap: 1rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    /* ปรับขนาดปุ่มให้เต็มจอ */
+    padding: 10px;
+    font-size: 16px;
+    /* ลดขนาดฟอนต์ในปุ่ม */
+  }
+
+
+  .container {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    /* ลดความโค้งของขอบ */
+  }
+
+  .footer {
+    padding: 10px;
+    font-size: 14px;
+    /* ลดขนาดฟอนต์ของ footer */
+  }
+}
+
+@media (max-width: 576px) {
+  /* สำหรับหน้าจอที่เล็กกว่า */
+
+  h1,
+  h3 {
+    font-size: 24px;
+    /* ลดขนาดฟอนต์ของหัวข้อให้น้อยลงอีก */
+  }
+
+  p {
+    font-size: 14px;
+    /* ขนาดฟอนต์ของพารากราฟเล็กลงอีก */
+  }
+
+  .navbar {
+    padding: 5px;
+    height: auto;
+  }
+
+  .navbar .logo img {
+    width: 120px;
+    /* ลดขนาดโลโก้ให้เล็กลงอีก */
+  }
+
+  .btn-primary {
+    padding: 10px;
+    font-size: 14px;
+    /* ขนาดของฟอนต์ในปุ่มเล็กลง */
+  }
+
+  .footer {
+    padding: 8px;
+    font-size: 12px;
+    /* ลดขนาดฟอนต์ของ footer */
+  }
+
+  .alert {
+    font-size: 12px;
+    /* ลดขนาดฟอนต์ในข้อความแจ้งเตือน */
+    padding: 10px;
+  }
 }

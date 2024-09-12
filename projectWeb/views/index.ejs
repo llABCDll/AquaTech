@@ -80,10 +80,10 @@
                                 <h5 class="card-title">
                                     <%= board.nameboard %>
                                 </h5>
-                                <p class="hidden">Id: <%= board.id %>
+                                <!-- <p class="hidden">Id: <%= board.id %>
                                 </p>
                                 <p class="card-text">Token: <%= board.token %>
-                                </p>
+                                </p> -->
                                 <p id="temp-display-<%= board.token %>">Temp: <%= board.temp %> °C</p>
                                 <p class="card-text">pH: <%= board.ph %>
                                 </p>
@@ -174,7 +174,7 @@
                             updateBoardData(board.token, board.temp, board.ph);
                         });
                     });
-            }, 10000); // อัปเดตทุก 10 วินาที
+            }, 1000); // อัปเดตทุก 10 วินาที
 
         </script>
 

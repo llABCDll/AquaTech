@@ -3,3 +3,6 @@
     margin-bottom: 20px;
 }
 
+.card body {
+    font-family: wf_standard-font, helvetica, arial, sans-serif;
+}
