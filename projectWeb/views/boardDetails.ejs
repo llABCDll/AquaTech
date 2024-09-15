@@ -46,14 +46,15 @@
                         <span class="bi bi-clipboard"></span> Copy
                     </button>
                 </p>
-                <p class="card-text">
+                <!-- <p class="card-text">
                     Default Temp:
                     <% if (board.temp_default) { %>
                         <%= board.temp_default.min %> - <%= board.temp_default.max %> °C
                                 <% } else { %>
                                     Not Set
                                     <% } %>
-                </p>
+                </p> -->
+                <p id="temp-display-<%= board.token %>">Current Temp: <%= board.new_temp %> °C</p>
                 <p id="temp-display-<%= board.token %>">Temp: <%= board.temp %> °C</p>
                 <p class="card-text">pH: <%= board.ph %>
                 </p>
@@ -106,7 +107,7 @@
                                         <label for="temp" class="form-label">Temperature (°C)</label>
                                         <!-- แสดงอุณหภูมิปัจจุบันในฟิลด์อินพุต -->
                                         <input type="number" id="temp" name="temp" class="form-control"
-                                            value="<%= board.temp %>" required>
+                                            value="<%= board.new_temp %>" required>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save Changes</button>
                                 </form>
@@ -145,7 +146,7 @@
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         document.getElementById('changeNameAndDefaultForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -175,7 +176,7 @@
                     alert('Failed to update name and default');
                 });
         });
-    </script>
+    </script> -->
 
     <script>
         document.getElementById('changeSettingForm').addEventListener('submit', function (event) {
@@ -246,6 +247,7 @@
             alert('Token copied to clipboard: ' + tokenText);
         }
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 

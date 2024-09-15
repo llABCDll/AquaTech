@@ -257,53 +257,31 @@ app.post('/updateName', (req, res) => {
 });
 
 
-// เส้นทางสำหรับอัพเดตค่า temp_default
-app.post('/updateTempDefault', (req, res) => {
-    const { token, temp_min, temp_max } = req.body;
-
-    if (!temp_min || !temp_max) {
-        return res.status(400).send('Both temp_min and temp_max are required');
-    }
-
-    // สร้างวัตถุ JSON สำหรับ temp_default
-    const temp_default = {
-        min: temp_min,
-        max: temp_max
-    };
-
-    const query = `UPDATE createbtn SET temp_default = $1 WHERE token = $2`;
-
-    dbConnection.query(query, [temp_default, token])
-        .then(() => {
-            res.status(200).send('Temperature default updated successfully');
-        })
-        .catch(err => {
-            console.error('Error updating temp_default:', err);
-            res.status(500).send('Failed to update temperature default');
-        });
-});
-
 // updateTemp
 app.post('/updateTemp', (req, res) => {
     const { token, temp } = req.body;
 
     console.log(req.body);
 
-    // Update the new_temp column in the 'createbtn' table
-    dbConnection.query('UPDATE createbtn SET new_temp = $1 WHERE token = $2', [temp, token])
-        .then(() => {
-            // Fetch the updated data and order by id
-            return dbConnection.query('SELECT * FROM createbtn ORDER BY id ASC');
-        })
-        .then(result => {
-            // ส่งข้อมูลที่อัพเดตกลับไปยังหน้าเว็บหรือทำสิ่งที่ต้องการ
-            res.status(200).json(result.rows);
-        })
-        .catch(err => {
-            console.error('Error updating temperature:', err);
-            res.status(500).send('Failed to update temperature');
-        });
+    // เริ่มต้นด้วยการอัปเดตค่า new_temp และ update_status
+    dbConnection.query(
+        'UPDATE createbtn SET new_temp = $1, update_status = 1 WHERE token = $2',
+        [temp, token]
+    )
+    .then(() => {
+        // ดึงข้อมูลที่อัปเดตแล้วและเรียงตาม id
+        return dbConnection.query('SELECT * FROM createbtn ORDER BY id ASC');
+    })
+    .then(result => {
+        // ส่งข้อมูลที่อัปเดตกลับไปยังหน้าเว็บหรือทำสิ่งที่ต้องการ
+        res.status(200).json(result.rows);
+    })
+    .catch(err => {
+        console.error('Error updating temperature:', err);
+        res.status(500).send('Failed to update temperature');
+    });
 });
+
 
 // ESP32 จะดึงค่าจาก endpoint นี้เพื่อนำ temp ไปปรับใช้
 app.get('/getNewTemp', (req, res) => {
@@ -476,14 +454,15 @@ app.post('/api/data', (req, res) => {
     // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
     const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
 
-    dbConnection.query('SELECT id FROM createbtn WHERE token = $1', [token])
+    dbConnection.query('SELECT id, update_status FROM createbtn WHERE token = $1', [token])
         .then(result => {
             if (result.rows.length > 0) {
                 const boardId = result.rows[0].id;
+                const updateStatus = result.rows[0].update_status;
 
-                // อัปเดต temp และ ph ใน createbtn
+                // อัปเดต temp และ ph ใน createbtn (ไม่อัปเดต update_status)
                 const updateCreateBtnQuery = dbConnection.query(
-                    'UPDATE createbtn SET temp = $1, ph = $2, timestamp = NOW() WHERE id = $3',
+                    'UPDATE createbtn SET temp = $1, ph = $2 WHERE id = $3',
                     [temp, ph, boardId]
                 );
 
@@ -495,12 +474,13 @@ app.post('/api/data', (req, res) => {
                     [token]
                 );
 
-                return Promise.all([updateCreateBtnQuery, checkLastInsertQuery]);
+                return Promise.all([updateCreateBtnQuery, checkLastInsertQuery, updateStatus]);
             } else {
                 return Promise.reject({ status: 400, message: 'Invalid token' });
             }
         })
         .then(results => {
+            const updateStatus = results[2];
             const lastInsertTimestamp = results[1].rows[0]?.timestamp;
             const currentMoment = moment(currentTimestamp);
 
@@ -510,13 +490,18 @@ app.post('/api/data', (req, res) => {
                 return dbConnection.query(
                     'INSERT INTO sensor_data (temp, ph, token, timestamp) VALUES ($1, $2, $3, $4)',
                     [temp, ph, token, currentTimestamp]
-                );
+                ).then(() => {
+                    return { update_status: updateStatus }; // ส่งกลับค่า update_status พร้อมกับข้อมูลใหม่
+                });
             } else {
-                return Promise.resolve(); // ถ้าไม่ถึง 1 ชั่วโมง ไม่ต้องแทรกข้อมูลใหม่
+                return { update_status: updateStatus }; // ส่งกลับค่า update_status โดยไม่มีการแทรกข้อมูลใหม่
             }
         })
-        .then(() => {
-            res.status(200).send('Data updated successfully, sensor data recorded if passed 1 hour');
+        .then(result => {
+            res.status(200).json({
+                message: 'Data updated successfully, sensor data recorded if passed 1 hour',
+                update_status: result.update_status
+            });
         })
         .catch(err => {
             if (err.status) {
@@ -528,43 +513,23 @@ app.post('/api/data', (req, res) => {
         });
 });
 
-// api บันทึกค่า temp, ph เก็บข้อมูลทุกๆ 1 ชม.
-app.post('/api/savedata', (req, res) => {
-    const { token, temp, ph, email } = req.body;
+// api update ค่าสถานะ จาก 1 เป็น 0 
+app.post('/api/update-status', (req, res) => {
+    const { token, update_status } = req.body;
 
-    console.log(req.body);
-
-    // ตรวจสอบว่าข้อมูลครบถ้วนหรือไม่
-    if (!token || temp === undefined || ph === undefined || !email) {
+    // ตรวจสอบข้อมูลที่ได้รับ
+    if (!token || update_status === undefined) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // กำหนดเวลาในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
-    const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
-
-    // ตรวจสอบ token และ email และแทรกข้อมูลใหม่พร้อม timestamp จากเซิร์ฟเวอร์
-    dbConnection.query('SELECT id FROM createbtn WHERE token = $1 AND email = $2', [token, email])
-        .then(result => {
-            if (result.rows.length > 0) {
-                const boardId = result.rows[0].id;
-                return dbConnection.query(
-                    'INSERT INTO sensor_data (temp, ph, email, token, timestamp) VALUES ($1, $2, $3, $4, $5)',
-                    [temp, ph, email, token, currentTimestamp]
-                );
-            } else {
-                return Promise.reject({ status: 400, message: 'Invalid token or email' });
-            }
-        })
+    // อัปเดตค่า update_status ในฐานข้อมูล
+    dbConnection.query('UPDATE createbtn SET update_status = $1 WHERE token = $2', [update_status, token])
         .then(() => {
-            res.status(200).send('Data inserted successfully');
+            res.status(200).json({ message: 'Update status changed successfully' });
         })
         .catch(err => {
-            if (err.status) {
-                res.status(err.status).send(err.message);
-            } else {
-                console.error('Error executing query', err.stack);
-                res.status(500).send('Error inserting data');
-            }
+            console.error('Error updating status:', err);
+            res.status(500).send('Failed to update status');
         });
 });
 
