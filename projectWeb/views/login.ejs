@@ -1,60 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styleLogin.css" />
-    <link rel="icon" type="image/x-icon" href="/pic/apple-touch-icon.png"/>
-    <title>Login</title>
-</head>
+<%- include ('head') %>
 
 <body>
-        <header>
-            <div class="navbar">
-                <ul class="logo"><a href="/home"><img src="/pic/logo.png" alt="Project Logo"></a></ul>
-                <ul class="link">
-                    <li><a href="/login">Sign In</a></li>
-                    <li><a href="/register">Sign Up</a></li>
-                </ul>
-            </div>
-        </header>
-    </div>
-    <div class="container">
-        <div class="login-box">
-            <h1 class="text-center mb-5 text-uppercase text-muted">Login</h1>
-            <!-- แสดงข้อความ error ถ้ามี -->
-            <% if (typeof login_errors !=='undefined' && login_errors.length> 0) { %>
-                <div class="alert alert-danger" id="alert">
-                    <ul>
-                        <% login_errors.forEach(error=> { %>
-                            <li>
-                                <%= error %>
-                            </li>
-                            <% }) %>
-                    </ul>
-                </div>
-                <% } %>
-                    <form action="/login" method="post" novalidate>
-                        <div class="form-group mt-2">
-                            <input type="text" name="user_email" class="form-control" placeholder="Email" required>
-                        </div>
-                        <div class="form-group mt-2">
-                            <input type="password" name="user_pass" id="_pass" class="form-control"
-                                placeholder="Password" required>
-                        </div>
+    <%- include ('nav') %>
 
-                        <button type="submit" class="mt-2 btn btn-primary w-100">Login</button>
-                    </form>
-                    <div>
-                        <a href="/forgotpass" class="btn btn-link">Forgot password ?</a>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 shadow-lg rounded-3 bg-white">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4 fw-bold text-dark animate__animated animate__fadeIn">เข้าสู่ระบบ</h2>
+                        
+                        <% if (typeof login_errors !== 'undefined' && login_errors.length > 0) { %>
+                            <div class="alert alert-light border rounded-3 animate__animated animate__fadeIn" id="alert">
+                                <ul class="mb-0 text-dark">
+                                    <% login_errors.forEach(error => { %>
+                                        <li><%= error %></li>
+                                    <% }) %>
+                                </ul>
+                            </div>
+                        <% } %>
+
+                        <form action="/login" method="post" novalidate class="needs-validation animate__animated animate__fadeIn">
+                            <div class="mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-dark rounded-start"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" name="user_email" class="form-control form-control-lg rounded-end" placeholder="อีเมล" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-dark rounded-start"><i class="bi bi-lock"></i></span>
+                                    <input type="password" name="user_pass" id="_pass" class="form-control form-control-lg rounded-end" placeholder="รหัสผ่าน" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-dark btn-md w-100 mb-4 shadow-sm hover-effect rounded-pill">เข้าสู่ระบบ</button>
+                        </form>
+                        
+                        <div class="text-end animate__animated animate__fadeIn">
+                            <a href="/forgotpass" class="text-decoration-none text-muted hover-effect">ลืมรหัสผ่าน?</a>
+                        </div>
                     </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // ซ่อนข้อความแจ้งเตือนหลังจาก 3 วินาที
-        setTimeout(function () {
+        setTimeout(function() {
             var alert = document.getElementById('alert');
             if (alert) {
                 alert.style.display = 'none';
@@ -62,5 +54,4 @@
         }, 3000);
     </script>
 </body>
-
 </html>
