@@ -33,7 +33,7 @@ li {
 
 a {
     text-decoration: none;
-    color: #000;
+    color: #ffffff;
     font-size: 1rem;
 }
 
@@ -51,8 +51,8 @@ a:hover {
     border: 1px solid #ffffff20;
     /* backdrop-filter: blur(16px) saturate(120%); */
     padding: 43px;
+    overflow: visible;
 }
-
 
 .navbar {
     flex-wrap: nowrap;
@@ -69,30 +69,6 @@ a:hover {
     background: #ffffff1a;
     border: 1px solid #ffffff20;
     backdrop-filter: blur(16px) saturate(120%);
-}
-
-.dropdown_menu {
-    display: none;
-    position: absolute;
-    right: 2rem;
-    top: 60px;
-    width: 300px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: height .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.dropdown_menu.open {
-    height: 240px;
-}
-
-.dropdown_menu li {
-    position: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .navbar .logo {
@@ -128,15 +104,20 @@ a:hover {
     background-color: #c82333;
 }
 
-.btn-primary {
-    position: absolute;
-    left: 1270px;
-    top: 120px;
-}
-
 .btn-primary-2 {
     background-color: #007BFF;
     color: #fff;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute; /* ทำให้เมนูเลื่อนมีตำแหน่งแบบอิสระ */
+    right: 0;
+    left: auto;
+    z-index: 9999; /* ปรับค่า z-index ให้สูงพอ */
 }
 
 .navbar .links {
@@ -208,16 +189,6 @@ a:hover {
         padding: 10px 0;
     }
 
-    .btn-primary {
-        left: auto;
-        top: auto;
-        position: static;
-        /* ปรับตำแหน่งให้ไม่ใช้ absolute บนอุปกรณ์มือถือ */
-        margin: 10px 0;
-        width: 100%;
-        /* ปรับปุ่มให้มีขนาดเต็มกว้าง */
-    }
-
     .container {
         width: 100%;
         padding: 20px;
@@ -239,6 +210,10 @@ a:hover {
         flex-direction: column;
         /* เปลี่ยนการจัดวางของลิงก์เป็นคอลัมน์ */
     }
+
+    .btn-primary {
+        width: 100%; /* ทำให้ปุ่มขยายเต็มความกว้างของหน้าจอในอุปกรณ์ขนาดเล็ก */
+    }
 }
 
 @media (max-width: 576px) {
@@ -252,12 +227,6 @@ a:hover {
     .logo img {
         width: 150px;
         /* ลดขนาดโลโก้ให้เล็กลงอีก */
-    }
-
-    .btn-primary {
-        padding: 10px;
-        font-size: 14px;
-        /* ลดขนาดฟอนต์ในปุ่ม */
     }
 
     .container {
@@ -281,5 +250,9 @@ a:hover {
         /* ปรับปุ่มให้ขนาดเต็มจอ */
         text-align: center;
         /* จัดข้อความในปุ่มให้อยู่ตรงกลาง */
+    }
+
+    .btn-primary {
+        width: 100%; /* ทำให้ปุ่มขยายเต็มความกว้างของหน้าจอในอุปกรณ์ขนาดเล็ก */
     }
 }

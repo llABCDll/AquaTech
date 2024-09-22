@@ -8,7 +8,6 @@ const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const { timeStamp } = require('console');
 const moment = require('moment-timezone');
-
 const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
 
 const app = express();
@@ -219,13 +218,13 @@ app.post('/login', ifLoggedIn, [
 // createbtn
 app.post('/createboard', ifNotLoggedIn, (req, res) => {
     const { nameboard, user_email, token, temp_min, temp_max } = req.body;
-    const temp_default = JSON.stringify({ min: temp_min, max: temp_max });
+    // const temp_default = JSON.stringify({ min: temp_min, max: temp_max });
 
     console.log('Request Body:', req.body);
 
     dbConnection.query(
-        "INSERT INTO createbtn (nameboard, email, token, temp_default, timestamp) VALUES ($1, $2, $3, $4, NOW())",
-        [nameboard, user_email, token, temp_default]
+        "INSERT INTO createbtn (nameboard, email, token) VALUES ($1, $2, $3)",
+        [nameboard, user_email, token]
     )
         .then(() => {
             res.redirect('/');
@@ -256,7 +255,6 @@ app.post('/updateName', (req, res) => {
         });
 });
 
-
 // updateTemp
 app.post('/updateTemp', (req, res) => {
     const { token, temp } = req.body;
@@ -280,25 +278,6 @@ app.post('/updateTemp', (req, res) => {
         console.error('Error updating temperature:', err);
         res.status(500).send('Failed to update temperature');
     });
-});
-
-
-// ESP32 จะดึงค่าจาก endpoint นี้เพื่อนำ temp ไปปรับใช้
-app.get('/getNewTemp', (req, res) => {
-    const { token } = req.query;
-
-    dbConnection.query('SELECT new_temp FROM createbtn WHERE token = $1', [token])
-        .then(result => {
-            if (result.rows.length > 0) {
-                res.status(200).json({ temp: result.rows[0].new_temp });
-            } else {
-                res.status(404).send('Token not found');
-            }
-        })
-        .catch(err => {
-            console.error('Error fetching new temperature:', err);
-            res.status(500).send('Failed to fetch new temperature');
-        });
 });
 
 // dashboard
@@ -454,11 +433,12 @@ app.post('/api/data', (req, res) => {
     // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
     const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
 
-    dbConnection.query('SELECT id, update_status FROM createbtn WHERE token = $1', [token])
+    dbConnection.query('SELECT id, update_status, new_temp FROM createbtn WHERE token = $1', [token])
         .then(result => {
             if (result.rows.length > 0) {
                 const boardId = result.rows[0].id;
                 const updateStatus = result.rows[0].update_status;
+                const newTemp = result.rows[0].new_temp; // ดึงค่า new_temp ด้วย
 
                 // อัปเดต temp และ ph ใน createbtn (ไม่อัปเดต update_status)
                 const updateCreateBtnQuery = dbConnection.query(
@@ -474,13 +454,14 @@ app.post('/api/data', (req, res) => {
                     [token]
                 );
 
-                return Promise.all([updateCreateBtnQuery, checkLastInsertQuery, updateStatus]);
+                return Promise.all([updateCreateBtnQuery, checkLastInsertQuery, updateStatus, newTemp]);
             } else {
                 return Promise.reject({ status: 400, message: 'Invalid token' });
             }
         })
         .then(results => {
             const updateStatus = results[2];
+            const newTemp = results[3]; // รับค่า new_temp
             const lastInsertTimestamp = results[1].rows[0]?.timestamp;
             const currentMoment = moment(currentTimestamp);
 
@@ -491,16 +472,17 @@ app.post('/api/data', (req, res) => {
                     'INSERT INTO sensor_data (temp, ph, token, timestamp) VALUES ($1, $2, $3, $4)',
                     [temp, ph, token, currentTimestamp]
                 ).then(() => {
-                    return { update_status: updateStatus }; // ส่งกลับค่า update_status พร้อมกับข้อมูลใหม่
+                    return { update_status: updateStatus, new_temp: newTemp }; // ส่งกลับค่า update_status และ new_temp พร้อมกับข้อมูลใหม่
                 });
             } else {
-                return { update_status: updateStatus }; // ส่งกลับค่า update_status โดยไม่มีการแทรกข้อมูลใหม่
+                return { update_status: updateStatus, new_temp: newTemp }; // ส่งกลับค่า update_status และ new_temp โดยไม่มีการแทรกข้อมูลใหม่
             }
         })
         .then(result => {
             res.status(200).json({
                 message: 'Data updated successfully, sensor data recorded if passed 1 hour',
-                update_status: result.update_status
+                update_status: result.update_status,
+                new_temp: result.new_temp // ส่ง new_temp กลับไปด้วย
             });
         })
         .catch(err => {
@@ -514,16 +496,16 @@ app.post('/api/data', (req, res) => {
 });
 
 // api update ค่าสถานะ จาก 1 เป็น 0 
-app.post('/api/update-status', (req, res) => {
-    const { token, update_status } = req.body;
+app.post('/api/updateStatus', (req, res) => {
+    const { token, updateStatus } = req.body;
 
     // ตรวจสอบข้อมูลที่ได้รับ
-    if (!token || update_status === undefined) {
+    if (!token || updateStatus === undefined) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
     // อัปเดตค่า update_status ในฐานข้อมูล
-    dbConnection.query('UPDATE createbtn SET update_status = $1 WHERE token = $2', [update_status, token])
+    dbConnection.query('UPDATE createbtn SET update_status = $1 WHERE token = $2', [updateStatus, token])
         .then(() => {
             res.status(200).json({ message: 'Update status changed successfully' });
         })
@@ -533,20 +515,48 @@ app.post('/api/update-status', (req, res) => {
         });
 });
 
+// API for receiving temperature updates from ESP32
+app.post('/api/sendStatus', (req, res) => {
+    const { token, sendTemp } = req.body;
+    console.log(req.body);
+
+    if (!token || sendTemp === undefined) {
+        return res.status(400).json({ error: 'Missing token or sendTemp' });
+    }
+
+    // Update the new_temp column in the 'createbtn' table
+    dbConnection.query('UPDATE createbtn SET new_temp = $1 WHERE token = $2 RETURNING *', [sendTemp, token])
+        .then(result => {
+            if (result.rows.length === 0) {
+                // Token not found
+                return res.status(404).json({ error: 'Token not found' });
+            }
+            // Return the updated row
+            res.status(200).json(result.rows[0]);
+        })
+        .catch(err => {
+            console.error('Error updating temperature:', err);
+            res.status(500).json({ error: 'Failed to update temperature' });
+        });
+});
+
 // แสดงกราฟและตาราง
 app.get('/getHourlyData', async (req, res) => {
-    const { token } = req.query; // รับค่า token จาก query parameter
-    const yesterdayStart = moment().tz('Asia/Bangkok').subtract(1, 'days').startOf('day').format('YYYY-MM-DD HH:mm:ss'); // 00:00 ของวันก่อนหน้า
-    const yesterdayEnd = moment().tz('Asia/Bangkok').subtract(1, 'days').endOf('day').format('YYYY-MM-DD HH:mm:ss'); // 23:59 ของวันก่อนหน้า
+    const { token, date } = req.query; // รับทั้ง token และ date จาก query parameter
+    const selectedDateStart = moment(date).tz('Asia/Bangkok').startOf('day').format('YYYY-MM-DD HH:mm:ss'); // 00:00 ของวันที่เลือก
+    const selectedDateEnd = moment(date).tz('Asia/Bangkok').endOf('day').format('YYYY-MM-DD HH:mm:ss'); // 23:59 ของวันที่เลือก
 
     try {
         const result = await dbConnection.query(`
-            SELECT TO_TIMESTAMP(timestamp, 'YYYY-MM-DD HH24:MI:SS') AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS timestamp, temp, ph 
+            SELECT 
+                TO_CHAR(TO_TIMESTAMP(timestamp, 'YYYY-MM-DD HH24:MI:SS') AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok', 'YYYY-MM-DD HH24:MI:SS') AS timestamp, 
+                temp, 
+                ph 
             FROM sensor_data 
             WHERE token = $1
             AND TO_TIMESTAMP(timestamp, 'YYYY-MM-DD HH24:MI:SS') AT TIME ZONE 'UTC' BETWEEN $2::timestamp AND $3::timestamp
             ORDER BY TO_TIMESTAMP(timestamp, 'YYYY-MM-DD HH24:MI:SS') AT TIME ZONE 'UTC' ASC
-        `, [token, yesterdayStart, yesterdayEnd]);
+        `, [token, selectedDateStart, selectedDateEnd]);
 
         res.json(result.rows); // ส่งผลลัพธ์กลับในรูปแบบ JSON
     } catch (error) {
@@ -554,7 +564,6 @@ app.get('/getHourlyData', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 
 // เริ่มเซิร์ฟเวอร์
 const PORT = process.env.PORT || 3000;

@@ -6,3 +6,25 @@
 .card body {
     font-family: wf_standard-font, helvetica, arial, sans-serif;
 }
+
+
+
+@media (max-width: 768px) {
+    .templower_higher p {
+        font-size: 1rem; /* ลดขนาดฟอนต์ลงบนหน้าจอที่เล็กกว่า */
+    }
+
+    .templower_higher i {
+        font-size: 1.5rem; /* ลดขนาดไอคอนลงเมื่อหน้าจอเล็กกว่า */
+    }
+}
+
+@media (max-width: 576px) {
+    .templower_higher p {
+        font-size: 0.9rem; /* ปรับให้เล็กลงอีกเมื่อหน้าจอเล็กกว่า 576px */
+    }
+
+    .templower_higher i {
+        font-size: 1.2rem; /* ปรับขนาดไอคอนให้เล็กลง */
+    }
+}

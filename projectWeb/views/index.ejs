@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dash Board</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Bootstrap Bundle JS (รวม Popper.js ด้วย) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
         crossorigin="anonymous"></script>
@@ -21,22 +25,37 @@
     <header>
         <div class="navbar">
             <ul class="logo"><a href="/home"><img src="/pic/logo.png" alt="Project Logo"></a></ul>
-            <ul class="link">
-                <h1>
-                    <%= username %>
-                </h1>
-                <form action="/logout" method="post">
-                    <button type="submit" class="btn btn-danger">Logout</button>
-                </form>
-            </ul>
+            <!-- Right elements -->
+            <div class="d-flex align-items-center">
+                <!-- Avatar -->
+                <div class="dropdown" style="position: relative;">
+                    <a class="dropdown-toggle d-flex align-items-center hidden-arrow" href="#" role="button"
+                        id="navbarDropdownMenuAvatar" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bars" style="font-size: 2rem;"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuAvatar"
+                        style="z-index: 9999;">
+                        <li><a class="dropdown-item" href="#">My profile</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li>
+                            <a href="#" class="dropdown-item"
+                                onclick="document.getElementById('logout-form').submit();">Logout</a>
+                            <form id="logout-form" action="/logout" method="post" style="display: none;"></form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </header>
 
-    <div class="container mt-4">
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            Create Board
-        </button>
+    <div class="container mt-4 ">
+        <div class="d-flex justify-content-center mt-3">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <span><i class="fas fa-plus"></i> Create Board</span>
+            </button>
+        </div>
+
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -48,20 +67,10 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="user_email" value="<%= username %>">
+                            <h3>board token: </h3>
                             <ul id="tokenList"></ul>
                             <input type="text" name="nameboard" class="form-control" placeholder="Board Name" required>
                             <input type="hidden" id="tokenInput" name="token">
-
-                            <!-- เพิ่มฟิลด์สำหรับอุณหภูมิเริ่มต้น
-                            <div class="mt-3">
-                                <label for="temp_min" class="form-label">Min Temperature (°C)</label>
-                                <input type="number" id="temp_min" name="temp_min" class="form-control" required>
-                            </div>
-                            <div class="mt-3">
-                                <label for="temp_max" class="form-label">Max Temperature (°C)</label>
-                                <input type="number" id="temp_max" name="temp_max" class="form-control" required>
-                            </div> -->
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -78,21 +87,37 @@
                 <% boards.forEach(board=> { %>
                     <div class="col-md-4 mb-4">
                         <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <%= board.nameboard %>
-                                </h5>
-                                <!-- <p class="hidden">Id: <%= board.id %>
-                                </p>
-                                <p class="card-text">Token: <%= board.token %>
-                                </p> -->
-                                <p id="temp-display-<%= board.token %>">Current Temp: <%= board.new_temp %> °C</p>
-                                <p id="temp-display-<%= board.token %>">Temp: <%= board.temp %> °C</p>
-                                <p class="card-text">pH: <%= board.ph %>
-                                </p>
-                                <a href="/board/<%= board.id %>" class="btn btn-info">View Details</a>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#confirmDeleteModal-<%= board.id %>">Delete</button>
+                            <div class="card-body shadow">
+                                <div>
+                                    <h5 class="card-title">
+                                        <%= board.nameboard %>
+                                    </h5>
+                                    <div class="view_detail d-flex flex-row-reverse mt-2 mb-2">
+                                        <a href="/board/<%= board.id %>" class="btn btn-info">more</a>
+                                    </div>
+                                </div>
+                                <div class="temp_ph shadow p-4 mb-4 bg-white rounded-2">
+                                    <i class="bi bi-cloud-sun d-flex flex-row-reverse" style="font-size: 2rem;"></i>
+                                    <div class="label fs-4">
+                                        <label for="temp-display-<%= board.token %>">อุณหภูมิในตู้:</label>
+                                    </div>
+                                    <div
+                                        class="temp display-4 mb-0 font-weight-bold d-flex flex-column text-center mt-2 mb-2" style="color: rgb(136, 216, 245);">
+                                        <p id="temp-display-<%= board.token %>">
+                                            <%= board.temp %> °C
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="ph display-6 mb-0 font-weight-bold d-flex flex-column text-center mt-2 mb-2" style="color: blueviolet;">
+                                        <p class="card-text">pH: <%= board.ph %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="delete d-flex flex-row-reverse">
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteModal-<%= board.id %>"><i
+                                            class="far fa-trash-can"></i> Delete</button>
+                                </div>
                                 <!-- Confirm Delete Modal -->
                                 <div class="modal fade" id="confirmDeleteModal-<%= board.id %>" tabindex="-1"
                                     aria-labelledby="confirmDeleteModalLabel-<%= board.id %>" aria-hidden="true">
@@ -167,21 +192,6 @@
                     phDisplay.textContent = `pH: ${newPh}`;
                 }
             }
-
-            // Function to send data to ESP32
-            function sendToESP32(status) {
-                fetch('/api/sendToESP32', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status })
-                })
-                    .then(response => response.json())
-                    .then(data => console.log('Sent to ESP32:', data))
-                    .catch(error => console.error('Error sending to ESP32:', error));
-            }
-
             // Update data every 10 seconds
             setInterval(() => {
                 fetch('/api/getBoardUpdates')
