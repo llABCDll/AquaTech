@@ -1,41 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/pic/apple-touch-icon.png"/>
-    <link rel="stylesheet" href="/css/styleResetpass.css" />
-    <title>Reset Password</title>
-
-</head>
+<%- include ('head') %>
 
 <body>
-    <header>
-        <div class="navbar">
-            <ul class="logo"><a href="/home"><img src="/pic/logo.png" alt="Project Logo"></a></ul>
-            <ul class="link">
-                <li><a href="/login">Sign In</a></li>
-                <li><a href="/register">Sign Up</a></li>
-            </ul>
-        </div>
-    </header>
-    <div class="container">
-        <div class="resetpass-box">
-            <h1 class="text-center mb-5 text-uppercase text-muted">Reset Password</h1>
-            <form action="/resetpass" method="post" novalidate>
-                <input type="hidden" name="token" value="<%= token %>"> <!-- ส่ง token ไปพร้อมกับฟอร์ม -->
-                <div class="form-group mt-2">
-                    <input type="password" name="user_pass" id="_rpass" class="form-control" placeholder="New Password"
-                        required>
-                </div>
-                <% if (locals.resetpass_error) { resetpass_error.forEach(function(resetpass_msg, index) { %>
-                    <div class="alert alert-danger" role="alert" id="alert-<%= index %>">
-                        <%= resetpass_msg %>
+    <%- include ('nav') %>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 shadow-lg rounded-3 bg-white">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4 fw-bold text-dark animate__animated animate__fadeIn">รีเซ็ตรหัสผ่าน</h2>
+                        
+                        <form action="/resetpass" method="post" novalidate class="needs-validation animate__animated animate__fadeIn">
+                            <input type="hidden" name="token" value="<%= token %>">
+                            <div class="mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-dark rounded-start"><i class="bi bi-lock"></i></span>
+                                    <input type="password" name="user_pass" id="_rpass" class="form-control form-control-lg rounded-end" placeholder="รหัสผ่านใหม่" required>
+                                </div>
+                            </div>
+                            
+                            <% if (locals.resetpass_error) { %>
+                                <div class="alert alert-light border rounded-3 animate__animated animate__fadeIn" id="alert">
+                                    <ul class="mb-0 text-dark">
+                                        <% resetpass_error.forEach(function(resetpass_msg, index) { %>
+                                            <li><%= resetpass_msg %></li>
+                                        <% }) %>
+                                    </ul>
+                                </div>
+                            <% } %>
+                            
+                            <button type="submit" class="btn btn-dark btn-md w-100 mb-4 shadow-sm hover-effect rounded-pill">อัพเดทรหัสผ่าน</button>
+                        </form>
                     </div>
-                    <% }) } %>
-                        <button type="submit" class="mt-2 btn btn-primary w-100">Update Password</button>
-            </form>
+                </div>
+            </div>
         </div>
     </div>
     <script>
