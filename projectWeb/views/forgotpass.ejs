@@ -5,12 +5,12 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
-                <div class="card border-0 shadow-lg rounded-3 bg-white">
+                <div class="card border-0 shadow-lg rounded-3" style="background-color: #f8f9fa;">
                     <div class="card-body p-5">
-                        <h2 class="text-center mb-4 fw-bold text-dark animate__animated animate__fadeIn">ลืมรหัสผ่าน</h2>
+                        <h2 class="text-center mb-4 fw-bold animate__animated animate__fadeIn" style="color: #26648E;">ลืมรหัสผ่าน</h2>
                         
                         <% if (locals.forgotpass_error) { %>
-                            <div class="alert alert-light border rounded-3 animate__animated animate__fadeIn" id="alert">
+                            <div class="alert alert-light border rounded-3 animate__animated animate__fadeIn" id="alert" style="border-color: #26648E;">
                                 <ul class="mb-0 text-dark">
                                     <% forgotpass_error.forEach(function(forgotpass_msg, index) { %>
                                         <li><%= forgotpass_msg %></li>
@@ -22,11 +22,11 @@
                         <form action="/forgotpass" method="post" novalidate class="needs-validation animate__animated animate__fadeIn">
                             <div class="mb-4">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light text-dark rounded-start"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" name="user_email" id="_remail" class="form-control form-control-lg rounded-end" placeholder="อีเมล" required>
+                                    <span class="input-group-text" style="background-color: #26648E; color: white;"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" name="user_email" id="_remail" class="form-control form-control-lg" placeholder="อีเมล" required>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-dark btn-md w-100 mb-4 shadow-sm hover-effect rounded-pill">ส่งลิงก์รีเซ็ตรหัสผ่าน</button>
+                            <button type="submit" class="btn btn-md w-100 mb-4 shadow-sm hover-effect rounded-pill" style="background-color: #26648E; color: white;">ยืนยัน</button>
                         </form>
                     </div>
                 </div>
