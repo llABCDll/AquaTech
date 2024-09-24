@@ -257,28 +257,31 @@ app.post('/updateName', (req, res) => {
 
 // updateTemp
 app.post('/updateTemp', (req, res) => {
-    const { token, temp } = req.body;
+    const { token, minTemp, maxTemp } = req.body;
 
     console.log(req.body);
 
-    // เริ่มต้นด้วยการอัปเดตค่า new_temp และ update_status
+    // อัปเดตค่า min_temp และ max_temp ใน temp_default ที่เก็บเป็นรูปแบบ VARCHAR
+    const tempDefault = `{"min_temp": "${minTemp}", "max_temp": "${maxTemp}"}`;
+
     dbConnection.query(
-        'UPDATE createbtn SET new_temp = $1, update_status = 1 WHERE token = $2',
-        [temp, token]
+        'UPDATE createbtn SET temp_default = $1, update_status = 1 WHERE token = $2',
+        [tempDefault, token]
     )
-    .then(() => {
-        // ดึงข้อมูลที่อัปเดตแล้วและเรียงตาม id
-        return dbConnection.query('SELECT * FROM createbtn ORDER BY id ASC');
-    })
-    .then(result => {
-        // ส่งข้อมูลที่อัปเดตกลับไปยังหน้าเว็บหรือทำสิ่งที่ต้องการ
-        res.status(200).json(result.rows);
-    })
-    .catch(err => {
-        console.error('Error updating temperature:', err);
-        res.status(500).send('Failed to update temperature');
-    });
+        .then(() => {
+            // ดึงข้อมูลที่อัปเดตแล้วตาม token
+            return dbConnection.query('SELECT * FROM createbtn WHERE token = $1', [token]);
+        })
+        .then(result => {
+            // ส่งข้อมูลที่อัปเดตกลับไปยังหน้าเว็บ
+            res.status(200).json(result.rows);
+        })
+        .catch(err => {
+            console.error('Error updating temperature:', err);
+            res.status(500).send('Failed to update temperature');
+        });
 });
+
 
 // dashboard
 app.get('/dashboard', ifLoggedIn, (req, res) => {

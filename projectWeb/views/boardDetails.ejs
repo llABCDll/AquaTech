@@ -8,11 +8,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/font.css">
     <link rel="icon" type="image/x-icon" href="/pic/apple-touch-icon.png" />
     <link rel="stylesheet" href="/css/styleDetail.css" />
@@ -34,7 +36,8 @@
         <nav aria-label="breadcrumb" class="animate__animated animate__fadeInDown">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item ms-auto">
-                    <a href="/" class="text-decoration-none text-dark fw-bold hover:text-primary transition-colors fs-4 d-flex align-items-center">
+                    <a href="/"
+                        class="text-decoration-none text-dark fw-bold hover:text-primary transition-colors fs-4 d-flex align-items-center">
                         <i class="bi bi-house-door me-2 fs-3"></i>
                         <span class="hover-underline-animation">หน้าหลัก</span>
                     </a>
@@ -46,6 +49,7 @@
                 display: inline-block;
                 position: relative;
             }
+
             .hover-underline-animation::after {
                 content: '';
                 position: absolute;
@@ -58,6 +62,7 @@
                 transform-origin: bottom right;
                 transition: transform 0.25s ease-out;
             }
+
             .hover-underline-animation:hover::after {
                 transform: scaleX(1);
                 transform-origin: bottom left;
@@ -66,49 +71,70 @@
 
         <div class="card shadow-lg rounded-4 border-0 mb-5">
             <div class="card-body p-3 p-md-5">
-                <h1 class="display-4 text-dark fw-bold mb-4 mb-md-5 text-center animate__animated animate__fadeInDown">รายละเอียดตู้ปลา</h1>
-                
+                <h1 class="display-4 text-dark fw-bold mb-4 mb-md-5 text-center animate__animated animate__fadeInDown">
+                    รายละเอียดตู้ปลา</h1>
+
                 <div class="container p-3 p-md-4 bg-white rounded-4 mb-4 mb-md-5 shadow-sm">
                     <div class="row align-items-center mb-4">
                         <div class="col-12 col-md-8 d-flex align-items-center mb-3 mb-md-0">
-                            <h2 class="h3 text-secondary fw-bold mb-0 animate__animated animate__fadeInLeft me-3" id="currentName">
+                            <h2 class="h3 text-secondary fw-bold mb-0 animate__animated animate__fadeInLeft me-3"
+                                id="currentName">
                                 <%= board.nameboard %>
                             </h2>
-                            <button type="button" class="btn btn-outline-dark rounded-pill animate__animated animate__fadeInRight border-0" data-bs-toggle="modal" data-bs-target="#changeNameModal">
+                            <button type="button"
+                                class="btn btn-outline-dark rounded-pill animate__animated animate__fadeInRight border-0"
+                                data-bs-toggle="modal" data-bs-target="#changeNameModal">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
                         </div>
                         <div class="col-12 col-md-4 d-flex justify-content-start justify-content-md-end">
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 transition-all hover:bg-danger hover:text-white" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-<%= board.id %>">
+                            <button type="button"
+                                class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 transition-all hover:bg-danger hover:text-white"
+                                data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-<%= board.id %>">
                                 <i class="far fa-trash-can me-2"></i>ลบบอร์ด
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="bg-light p-3 p-md-4 rounded-4 mb-4 mb-md-5 animate__animated animate__fadeIn">
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                            <p class="card-text mb-3 mb-md-0 d-flex flex-column flex-md-row align-items-start align-items-md-center">
-                                <span class="fw-bold text-dark fs-4 me-0 me-md-3 mb-2 mb-md-0">รหัสตู้ปลา :</span> 
-                                <span id="tokenText" class="text-muted fs-5 me-0 me-md-3 mb-2 mb-md-0"><%= board.token %></span>
+                        <div
+                            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                            <p
+                                class="card-text mb-3 mb-md-0 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                <span class="fw-bold text-dark fs-4 me-0 me-md-3 mb-2 mb-md-0">รหัสตู้ปลา :</span>
+                                <span id="tokenText" class="text-muted fs-5 me-0 me-md-3 mb-2 mb-md-0">
+                                    <%= board.token %>
+                                </span>
                             </p>
-                            <button id="copyButton" type="button" class="btn btn-secondary rounded-pill px-4 py-2 transition-all hover:bg-dark border-0" onclick="copyToClipboard()">
+                            <button id="copyButton" type="button"
+                                class="btn btn-secondary rounded-pill px-4 py-2 transition-all hover:bg-dark border-0"
+                                onclick="copyToClipboard()">
                                 <i class="bi bi-clipboard me-2"></i>คัดลอกรหัส
                             </button>
                         </div>
                     </div>
-
                     <div class="row mb-4 mb-md-5 justify-content-center">
                         <div class="col-12 col-md-8 col-lg-6">
-                            <div class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInLeft hover:shadow-xl transition-all position-relative">
+                            <div
+                                class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInLeft hover:shadow-xl transition-all position-relative">
                                 <div class="card-body p-4 p-md-5">
-                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-                                        <h3 class="card-title h4 mb-3 mb-md-0 text-uppercase font-weight-bold">อุณหภูมิที่ตั้งไว้</h3>
-                                        <button type="button" class="btn btn-secondary rounded-pill animate__animated animate__fadeInRight border-0 fs-4 px-4 py-2 shadow-sm hover:shadow-lg transition-all" data-bs-toggle="modal" data-bs-target="#changeSettingModal">
-                                            <i class="bi bi-sliders me-2"></i>ตั้งค่า
+                                    <div
+                                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                                        <h3 class="card-title h4 mb-3 mb-md-0 text-uppercase font-weight-bold">
+                                            อุณหภูมิที่ตั้งไว้</h3>
+                                        <button type="button"
+                                            class="btn btn-secondary rounded-pill animate__animated animate__fadeInRight border-0 fs-4 px-4 py-2 shadow-sm hover:shadow-lg transition-all"
+                                            data-bs-toggle="modal" data-bs-target="#changeSettingModal">
+                                            <i class="bi bi-sliders me-2"></i>ตั้งค่าอุณหภูมิ
                                         </button>
                                     </div>
                                     <h2 class="display-2 fw-bold mb-0 text-center">
-                                        <span id="currentTemperature" class="text-secondary"><%= board.new_temp %></span> °C
+                                        <span id="minTemperature" class="text-secondary">
+                                            <%=board.min_temp%>
+                                        </span> °C -
+                                        <span id="maxTemperature" class="text-secondary">
+                                            <%=board.max_temp%>
+                                        </span> °C
                                     </h2>
                                 </div>
                             </div>
@@ -117,7 +143,8 @@
 
                     <div class="row mb-4 mb-md-5">
                         <div class="col-12 col-md-6 mb-4 mb-md-0">
-                            <div class="card bg-warning text-dark rounded-4 shadow-sm animate__animated animate__fadeInUp h-100">
+                            <div
+                                class="card bg-warning text-dark rounded-4 shadow-sm animate__animated animate__fadeInUp h-100">
                                 <div class="card-body p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h3 class="card-title h4 mb-0">อุณหภูมิปัจจุบัน</h3>
@@ -130,7 +157,8 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="card rounded-4 shadow-sm animate__animated animate__fadeInUp h-100" style="background-color: #1E88E5; color: white;">
+                            <div class="card rounded-4 shadow-sm animate__animated animate__fadeInUp h-100"
+                                style="background-color: #1E88E5; color: white;">
                                 <div class="card-body p-4">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h3 class="card-title h4 mb-0">ค่า pH ปัจจุบัน</h3>
@@ -144,367 +172,376 @@
                         </div>
                     </div>
 
-                    <div class="row text-center mb-4 mb-md-5">
-                        <div class="col-12 col-md-6 mb-4 mb-md-0">
-                            <div class="card rounded-4 shadow-sm animate__animated animate__fadeInUp border border-primary h-100">
-                                <div class="card-body p-4">
-                                    <i class="fas fa-temperature-low fs-1 text-primary mb-3"></i>
-                                    <h5 class="card-title h4 mb-3">อุณหภูมิต่ำสุด</h5>
-                                    <p class="fs-3 mb-0"><span id="min-temp" class="text-dark fw-bold">กำลังโหลด...</span> °C</p>
+                    <!-- Modal for Changing Name -->
+                    <div class="modal fade" id="changeNameModal" tabindex="-1" aria-labelledby="changeNameModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-4 border-0 shadow-lg">
+                                <div class="modal-header bg-light text-dark border-bottom">
+                                    <h5 class="modal-title fw-bold" id="changeNameModalLabel">เปลี่ยนชื่อตู้ปลา</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 bg-white">
+                                    <form id="changeNameForm" action="/updateName" method="POST">
+                                        <input type="hidden" name="token" value="<%= board.token %>">
+                                        <div class="mb-4">
+                                            <label for="name"
+                                                class="form-label fw-bold text-secondary">ชื่อใหม่ของตู้ปลา:</label>
+                                            <input type="text" id="name" name="name"
+                                                class="form-control form-control-lg bg-light"
+                                                placeholder="<%= board.nameboard %>" required>
+                                        </div>
+                                        <button type="button" id="changeNameButton"
+                                            class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <div class="card rounded-4 shadow-sm animate__animated animate__fadeInUp border border-danger h-100">
-                                <div class="card-body p-4">
-                                    <i class="fas fa-temperature-high fs-1 text-danger mb-3"></i>
-                                    <h5 class="card-title h4 mb-3">อุณหภูมิสูงสุด</h5>
-                                    <p class="fs-3 mb-0"><span id="max-temp" class="text-dark fw-bold">กำลังโหลด...</span> °C</p>
+                    </div>
+
+                    <!-- Modal for Changing Settings -->
+                    <div class="modal fade" id="changeSettingModal" tabindex="-1"
+                        aria-labelledby="changeSettingModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-4 border-0 shadow-lg">
+                                <div class="modal-header bg-light text-dark border-bottom">
+                                    <h5 class="modal-title fw-bold" id="changeSettingModalLabel">
+                                        ปรับการตั้งค่าอุณหภูมิตู้ปลา</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 bg-white">
+                                    <form id="changeSettingForm">
+                                        <input type="hidden" name="token" value="<%= board.token %>">
+                                        <div class="mb-4">
+                                            <label for="minTemp"
+                                                class="form-label fw-bold text-secondary">อุณหภูมิต่ำสุด (°C):</label>
+                                            <input type="number" id="minTemp" name="minTemp"
+                                                class="form-control form-control-lg bg-light"
+                                                value="<%= board.min_temp %>" required>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label for="maxTemp"
+                                                class="form-label fw-bold text-secondary">อุณหภูมิสูงสุด (°C):</label>
+                                            <input type="number" id="maxTemp" name="maxTemp"
+                                                class="form-control form-control-lg bg-light"
+                                                value="<%= board.max_temp %>" required>
+                                        </div>
+                                        <button type="submit"
+                                            class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Modal for Changing Name -->
-                <div class="modal fade" id="changeNameModal" tabindex="-1" aria-labelledby="changeNameModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content rounded-4 border-0 shadow-lg">
-                            <div class="modal-header bg-light text-dark border-bottom">
-                                <h5 class="modal-title fw-bold" id="changeNameModalLabel">เปลี่ยนชื่อตู้ปลา</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body p-4 bg-white">
-                                <form id="changeNameForm" action="/updateName" method="POST">
-                                    <input type="hidden" name="token" value="<%= board.token %>">
-                                    <div class="mb-4">
-                                        <label for="name" class="form-label fw-bold text-secondary">ชื่อใหม่ของตู้ปลา:</label>
-                                        <input type="text" id="name" name="name" class="form-control form-control-lg bg-light" placeholder="<%= board.nameboard %>" required>
-                                    </div>
-                                    <button type="button" id="changeNameButton" class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal for Changing Settings -->
-                <div class="modal fade" id="changeSettingModal" tabindex="-1" aria-labelledby="changeSettingModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content rounded-4 border-0 shadow-lg">
-                            <div class="modal-header bg-light text-dark border-bottom">
-                                <h5 class="modal-title fw-bold" id="changeSettingModalLabel">ปรับการตั้งค่าอุณหภูมิตู้ปลา</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body p-4 bg-white">
-                                <form id="changeSettingForm">
-                                    <input type="hidden" name="token" value="<%= board.token %>">
-                                    <div class="mb-4">
-                                        <label for="temp" class="form-label fw-bold text-secondary">อุณหภูมิตู้ปลา (°C):</label>
-                                        <input type="number" id="temp" name="temp" class="form-control form-control-lg bg-light" value="<%= board.new_temp %>" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                     <!-- Modal ยืนยันการลบ -->
-                <div class="modal fade" id="confirmDeleteModal-<%= board.id %>" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-<%= board.id %>" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content border-0 shadow-lg rounded-4">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title font-weight-bold" id="confirmDeleteModalLabel-<%= board.id %>">ยืนยันการลบ</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="ปิด"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p class="mb-0">คุณแน่ใจหรือไม่ว่าต้องการลบบอร์ด <strong><%= board.nameboard %></strong>?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">ยกเลิก</button>
-                                <form action="/deleteboard" method="post">
-                                    <input type="hidden" name="board_id" value="<%= board.id %>">
-                                    <button type="submit" class="btn btn-danger rounded-pill px-4">ลบ</button>
-                                </form>
+                    <div class="modal fade" id="confirmDeleteModal-<%= board.id %>" tabindex="-1"
+                        aria-labelledby="confirmDeleteModalLabel-<%= board.id %>" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow-lg rounded-4">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title font-weight-bold"
+                                        id="confirmDeleteModalLabel-<%= board.id %>">ยืนยันการลบ</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                        aria-label="ปิด"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="mb-0">คุณแน่ใจหรือไม่ว่าต้องการลบบอร์ด <strong>
+                                            <%= board.nameboard %>
+                                        </strong>?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary rounded-pill px-4"
+                                        data-bs-dismiss="modal">ยกเลิก</button>
+                                    <form action="/deleteboard" method="post">
+                                        <input type="hidden" name="board_id" value="<%= board.id %>">
+                                        <button type="submit" class="btn btn-danger rounded-pill px-4">ลบ</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Date Picker -->
-                <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
-                    <h2 class="mb-4 text-center fw-bold">เลือกวันที่ดูข้อมูลตู้ปลา</h2>
-                    <div class="input-group mb-4">
-                        <input type="date" id="date-picker" class="form-control form-control-lg">
-                        <button class="btn btn-primary" id="fetchDataBtn">ดูข้อมูลตู้ปลา</button>
-                    </div>
-                </div>
-
-                <!-- Graph Area -->
-                <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
-                    <div class="card rounded-4 shadow-sm">
-                        <div class="card-body p-3 p-md-4">
-                            <h2 class="card-title mb-3 mb-md-4 fw-bold">ข้อมูลอุณหภูมิตู้ปลา</h2>
-                            <p class="text-muted mb-3 mb-md-4" data-date>วันที่ของข้อมูลชุดนี้</p>
-                            <canvas id="temperatureChart" width="100%" height="50"></canvas>
+                    <!-- Date Picker -->
+                    <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
+                        <h2 class="mb-4 text-center fw-bold">เลือกวันที่ดูข้อมูลตู้ปลา</h2>
+                        <div class="input-group mb-4">
+                            <input type="date" id="date-picker" class="form-control form-control-lg">
+                            <button class="btn btn-primary" id="fetchDataBtn">ดูข้อมูลตู้ปลา</button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Add pH Chart -->
-                <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
-                    <div class="card rounded-4 shadow-sm">
-                        <div class="card-body p-3 p-md-4">
-                            <h2 class="card-title mb-3 mb-md-4 fw-bold">ข้อมูล pH ในตู้ปลา</h2>
-                            <p class="text-muted mb-3 mb-md-4" data-date>วันที่ของข้อมูลชุดนี้</p>
-                            <canvas id="pHChart" width="100%" height="50"></canvas>
+                    <!-- Graph Area -->
+                    <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
+                        <div class="card rounded-4 shadow-sm">
+                            <div class="card-body p-3 p-md-4">
+                                <h2 class="card-title mb-3 mb-md-4 fw-bold">ข้อมูลอุณหภูมิตู้ปลา</h2>
+                                <p class="text-muted mb-3 mb-md-4" data-date>วันที่ของข้อมูลชุดนี้</p>
+                                <h4>แกน x: เวลา แกน y: อุณหภูมิ</h4>
+                                <canvas id="temperatureChart" width="100%" height="50"></canvas>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
-                    <div class="card rounded-4 shadow-sm">
-                        <div class="card-body p-3 p-md-4">
-                            <h2 class="card-title mb-3 mb-md-4 fw-bold">ตารางข้อมูลตู้ปลา</h2>
-                            <p class="text-muted mb-3 mb-md-4" data-date>วันที่ของข้อมูลชุดนี้</p>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>วันที่</th>
-                                            <th>เวลา</th>
-                                            <th>อุณหภูมิตู้ปลา (°C)</th>
-                                            <th>pH ในตู้ปลา</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="data-table-body">
-                                        <!-- ข้อมูลจะถูกเพิ่มที่นี่ -->
-                                    </tbody>
-                                </table>
+                    <!-- Add pH Chart -->
+                    <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
+                        <div class="card rounded-4 shadow-sm">
+                            <div class="card-body p-3 p-md-4">
+                                <h2 class="card-title mb-3 mb-md-4 fw-bold">ข้อมูล pH ในตู้ปลา</h2>
+                                <p class="text-muted mb-3 mb-md-4" data-date>วันที่ของข้อมูลชุดนี้</p>
+                                <h4>แกน x: เวลา แกน y:ค่า pH</h4>
+                                <canvas id="pHChart" width="100%" height="50"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
+                        <div class="card rounded-4 shadow-sm">
+                            <div class="card-body p-3 p-md-4">
+                                <h2 class="card-title mb-3 mb-md-4 fw-bold">ตารางข้อมูลตู้ปลา</h2>
+                                <p class="text-muted mb-3 mb-md-4" data-date>วันที่ของข้อมูลชุดนี้</p>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>วันที่</th>
+                                                <th>เวลา</th>
+                                                <th>อุณหภูมิตู้ปลา (°C)</th>
+                                                <th>pH ในตู้ปลา</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-table-body">
+                                            <!-- ข้อมูลจะถูกเพิ่มที่นี่ -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script>
-        document.getElementById('changeSettingForm').addEventListener('submit', function (event) {
-            event.preventDefault();
+        <script>
+            document.getElementById('changeSettingForm').addEventListener('submit', function (event) {
+                event.preventDefault();
 
-            const formData = new FormData(this);
-            const token = formData.get('token');
-            const temp = formData.get('temp');
+                const token = '<%= board.token %>';
+                const minTemp = document.getElementById('minTemp').value;
+                const maxTemp = document.getElementById('maxTemp').value;
 
-            fetch('/updateTemp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token, temp })
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Temperature update request sent successfully!');
-                        // อัพเดตค่าที่แสดงในหน้าเว็บ
-                        document.getElementById('currentTemperature').textContent = temp;
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('changeSettingModal'));
-                        modal.hide();  // ซ่อน modal หลังจากส่งคำขอสำเร็จ
-                    } else {
-                        alert('Failed to send update request');
-                    }
+                fetch('/updateTemp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token, minTemp, maxTemp })
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to send update request');
-                });
-        });
-    </script>
-
-    <script>
-        document.getElementById('changeNameButton').addEventListener('click', () => {
-            const formData = new FormData(document.getElementById('changeNameForm'));
-
-            fetch(document.getElementById('changeNameForm').action, {
-                method: 'POST',
-                body: new URLSearchParams(formData),
-            })
-                .then(response => response.text())
-                .then(result => {
-                    alert(result);
-                    // อัพเดตชื่อในหน้าเว็บ
-                    document.getElementById('currentName').textContent = formData.get('name');
-                    // ล้างฟอร์ม
-                    document.getElementById('changeNameForm').reset();
-                    // ปิดโมดัล
-                    bootstrap.Modal.getInstance(document.getElementById('changeNameModal')).hide();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
-    </script>
-
-    <script>
-        function copyToClipboard() {
-            // คัดลอกข้อความจาก span ที่มี id เป็น tokenText
-            const tokenText = document.getElementById('tokenText').innerText;
-            const tempInput = document.createElement('input');
-            tempInput.value = tokenText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-
-            // แจ้งเตือนเมื่อคัดลอกสำเร็จ
-            alert('Token copied to clipboard: ' + tokenText);
-        }
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const token = '<%= board.token %>'; // ใช้ token ของบอร์ด
-            const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD'); // วันที่ของวันก่อนหน้า
-
-            // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
-            const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
-            console.log('Current Timestamp:', currentTimestamp);
-
-            // ตั้งค่าเริ่มต้นใน date-picker เป็นวันก่อนหน้า
-            document.getElementById('date-picker').value = yesterday;
-
-            // ฟังก์ชันสำหรับการดึงข้อมูล
-            let tempChart, phChart;
-            function fetchDataForDate(selectedDate) {
-                fetch(`/getHourlyData?token=${token}&date=${selectedDate}`)
                     .then(response => response.json())
                     .then(data => {
-                        if (data.length === 0) {
-                            console.log('No data available');
-                            return;
+                        console.log('อุณหภูมิถูกอัปเดต:', data);
+
+                        if (data.length > 0) {
+                            const boardData = data[0];
+                            const tempDefault = JSON.parse(boardData.temp_default);
+                            document.getElementById('minTemperature').textContent = tempDefault.min_temp;
+                            document.getElementById('maxTemperature').textContent = tempDefault.max_temp;
+                        } else {
+                            console.warn('ข้อมูลอุณหภูมิไม่สมบูรณ์:', data);
                         }
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('changeSettingModal'));
+                        modal.hide();
+                        alert('การตั้งค่าอุณหภูมิถูกอัปเดตเรียบร้อยแล้ว!');
+                    })
 
-                        const labels = [];
-                        const tempData = [];
-                        const pHData = [];
-                        const tableBody = document.getElementById('data-table-body');
-                        tableBody.innerHTML = ''; // เคลียร์ข้อมูลเก่าก่อน
+                    .catch(error => {
+                        console.error('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ:', error);
+                        alert('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ');
+                    });
+            });
+        </script>
 
-                        // อัปเดตวันที่ของข้อมูล
-                        const firstEntryDate = new Date(data[0].timestamp);
-                        const formattedDate = firstEntryDate.toLocaleDateString('th-TH', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
+        <script>
+            document.getElementById('changeNameButton').addEventListener('click', () => {
+                const formData = new FormData(document.getElementById('changeNameForm'));
 
-                        // อัปเดตข้อความใน element <p> ที่มี attribute data-date
-                        document.querySelectorAll('p[data-date]').forEach(el => {
-                            el.textContent = `วันที่ของข้อมูลชุดนี้: ${formattedDate}`;
-                        });
+                fetch(document.getElementById('changeNameForm').action, {
+                    method: 'POST',
+                    body: new URLSearchParams(formData),
+                })
+                    .then(response => response.text())
+                    .then(result => {
+                        alert(result);
+                        // อัพเดตชื่อในหน้าเว็บ
+                        document.getElementById('currentName').textContent = formData.get('name');
+                        // ล้างฟอร์ม
+                        document.getElementById('changeNameForm').reset();
+                        // ปิดโมดัล
+                        bootstrap.Modal.getInstance(document.getElementById('changeNameModal')).hide();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
+        </script>
 
-                        // คำนวณค่าอุณหภูมิต่ำสุดและสูงสุด
-                        const tempValues = data.map(entry => entry.temp);
-                        const minTemp = Math.min(...tempValues);
-                        const maxTemp = Math.max(...tempValues);
+        <script>
+            function copyToClipboard() {
+                // คัดลอกข้อความจาก span ที่มี id เป็น tokenText
+                const tokenText = document.getElementById('tokenText').innerText;
+                const tempInput = document.createElement('input');
+                tempInput.value = tokenText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
 
-                        // อัปเดตใน HTML
-                        document.getElementById('min-temp').textContent = minTemp;
-                        document.getElementById('max-temp').textContent = maxTemp;
+                // แจ้งเตือนเมื่อคัดลอกสำเร็จ
+                alert('Token copied to clipboard: ' + tokenText);
+            }
+        </script>
 
-                        // อัปเดตตารางข้อมูลและกราฟ
-                        data.forEach(entry => {
-                            // แปลง timestamp จาก UTC เป็นเวลาท้องถิ่น Asia/Bangkok โดยใช้ moment.js
-                            const date = moment.utc(entry.timestamp).tz('Asia/Bangkok');
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const token = '<%= board.token %>'; // ใช้ token ของบอร์ด
+                const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD'); // วันที่ของวันก่อนหน้า
 
-                            labels.push(date.format('HH:mm:ss')); // ใช้ moment เพื่อฟอร์แมตเวลาที่ถูกต้อง
-                            tempData.push(entry.temp);
-                            pHData.push(entry.ph);
+                // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
+                const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+                console.log('Current Timestamp:', currentTimestamp);
 
-                            // แปลงปี ค.ศ. เป็น พ.ศ.
-                            const buddhistYear = date.year() + 543;
+                // ตั้งค่าเริ่มต้นใน date-picker เป็นวันก่อนหน้า
+                document.getElementById('date-picker').value = yesterday;
 
-                            // ฟอร์แมตวันที่ให้เป็น พ.ศ.
-                            const formattedDate = date.format(`DD/MM/${buddhistYear}`);
+                // ฟังก์ชันสำหรับการดึงข้อมูล
+                let tempChart, phChart;
+                function fetchDataForDate(selectedDate) {
+                    fetch(`/getHourlyData?token=${token}&date=${selectedDate}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                console.log('No data available');
+                                return;
+                            }
 
-                            const newRow = document.createElement('tr');
-                            newRow.innerHTML = `
+                            const labels = [];
+                            const tempData = [];
+                            const pHData = [];
+                            const tableBody = document.getElementById('data-table-body');
+                            tableBody.innerHTML = ''; // เคลียร์ข้อมูลเก่าก่อน
+
+                            // อัปเดตวันที่ของข้อมูล
+                            const firstEntryDate = new Date(data[0].timestamp);
+                            const formattedDate = firstEntryDate.toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+
+                            // อัปเดตข้อความใน element <p> ที่มี attribute data-date
+                            document.querySelectorAll('p[data-date]').forEach(el => {
+                                el.textContent = `วันที่ของข้อมูลชุดนี้: ${formattedDate}`;
+                            });
+
+                            // คำนวณค่าอุณหภูมิต่ำสุดและสูงสุด
+                            const tempValues = data.map(entry => entry.temp);
+                            const minTemp = Math.min(...tempValues);
+                            const maxTemp = Math.max(...tempValues);
+
+                            // อัปเดตตารางข้อมูลและกราฟ
+                            data.forEach(entry => {
+                                // แปลง timestamp จาก UTC เป็นเวลาท้องถิ่น Asia/Bangkok โดยใช้ moment.js
+                                const date = moment.utc(entry.timestamp).tz('Asia/Bangkok');
+
+                                labels.push(date.format('HH:mm:ss')); // ใช้ moment เพื่อฟอร์แมตเวลาที่ถูกต้อง
+                                tempData.push(entry.temp);
+                                pHData.push(entry.ph);
+
+                                // แปลงปี ค.ศ. เป็น พ.ศ.
+                                const buddhistYear = date.year() + 543;
+
+                                // ฟอร์แมตวันที่ให้เป็น พ.ศ.
+                                const formattedDate = date.format(`DD/MM/${buddhistYear}`);
+
+                                const newRow = document.createElement('tr');
+                                newRow.innerHTML = `
         <td>${formattedDate}</td> <!-- วันที่ -->
         <td>${date.format('HH:mm:ss')}</td>    <!-- เวลา -->
         <td>${entry.temp}</td>
         <td>${entry.ph}</td>
     `;
-                            tableBody.appendChild(newRow);
+                                tableBody.appendChild(newRow);
+                            });
+
+                            // อัปเดตกราฟถ้ายังไม่มีกราฟให้สร้างใหม่แต่ถ้ามีกราฟให้อัพเดต
+                            if (!tempChart) {
+                                const ctxTemp = document.getElementById('temperatureChart').getContext('2d');
+                                tempChart = new Chart(ctxTemp, {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: 'Temperature (°C)',
+                                            data: tempData,
+                                            borderColor: 'rgba(255, 99, 132, 1)',
+                                            fill: false
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            } else {
+                                tempChart.data.labels = labels;
+                                tempChart.data.datasets[0].data = tempData;
+                                tempChart.update();
+                            }
+
+                            if (!phChart) {
+                                const ctxPH = document.getElementById('pHChart').getContext('2d');
+                                phChart = new Chart(ctxPH, {
+                                    type: 'line',
+                                    data: {
+                                        labels: labels,
+                                        datasets: [{
+                                            label: 'pH',
+                                            data: pHData,
+                                            borderColor: 'rgba(54, 162, 235, 1)',
+                                            fill: false
+                                        }]
+                                    },
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            }
+                                        }
+                                    }
+                                });
+                            } else {
+                                phChart.data.labels = labels;
+                                phChart.data.datasets[0].data = pHData;
+                                phChart.update();
+                            }
                         });
+                }
+                // เรียกข้อมูลของวันก่อนหน้าเมื่อตอนโหลดหน้าเว็บ
+                fetchDataForDate(yesterday);
 
-                        // อัปเดตกราฟถ้ายังไม่มีกราฟให้สร้างใหม่แต่ถ้ามีกราฟให้อัพเดต
-                        if (!tempChart) {
-                            const ctxTemp = document.getElementById('temperatureChart').getContext('2d');
-                            tempChart = new Chart(ctxTemp, {
-                                type: 'line',
-                                data: {
-                                    labels: labels,
-                                    datasets: [{
-                                        label: 'Temperature (°C)',
-                                        data: tempData,
-                                        borderColor: 'rgba(255, 99, 132, 1)',
-                                        fill: false
-                                    }]
-                                },
-                                options: {
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
-                                }
-                            });
-                        } else {
-                            tempChart.data.labels = labels;
-                            tempChart.data.datasets[0].data = tempData;
-                            tempChart.update();
-                        }
-
-                        if (!phChart) {
-                            const ctxPH = document.getElementById('pHChart').getContext('2d');
-                            phChart = new Chart(ctxPH, {
-                                type: 'line',
-                                data: {
-                                    labels: labels,
-                                    datasets: [{
-                                        label: 'pH',
-                                        data: pHData,
-                                        borderColor: 'rgba(54, 162, 235, 1)',
-                                        fill: false
-                                    }]
-                                },
-                                options: {
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true
-                                        }
-                                    }
-                                }
-                            });
-                        } else {
-                            phChart.data.labels = labels;
-                            phChart.data.datasets[0].data = pHData;
-                            phChart.update();
-                        }
-                    });
-            }
-            // เรียกข้อมูลของวันก่อนหน้าเมื่อตอนโหลดหน้าเว็บ
-            fetchDataForDate(yesterday);
-
-            // กดปุ่มเพื่อเลือกวันที่ใหม่
-            document.getElementById('fetchDataBtn').addEventListener('click', function () {
-                const selectedDate = document.getElementById('date-picker').value;
-                fetchDataForDate(selectedDate);
+                // กดปุ่มเพื่อเลือกวันที่ใหม่
+                document.getElementById('fetchDataBtn').addEventListener('click', function () {
+                    const selectedDate = document.getElementById('date-picker').value;
+                    fetchDataForDate(selectedDate);
+                });
             });
-        });
 
-    </script>
+        </script>
 </body>
 
 </html>
