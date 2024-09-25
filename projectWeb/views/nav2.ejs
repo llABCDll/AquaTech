@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="/home">
-            <img src="/pic/logo.png" alt="โลโก้โปรเจค" height="40" class="d-inline-block align-text-top" style="filter: brightness(0);">
+            <img src="/pic/logo.png" alt="โลโก้โปรเจค" height="40" class="d-inline-block align-text-top" style="filter: brightness(0) saturate(100%) invert(18%) sepia(95%) saturate(1644%) hue-rotate(182deg) brightness(94%) contrast(101%);">
         </a>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false" aria-label="สลับการนำทาง">
             <span class="navbar-toggler-icon"></span>
@@ -9,8 +9,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <button href="#" class="nav-link text-dark hover-effect" onclick="document.getElementById('logout-form').submit();">
-                        <i class="bi bi-box-arrow-right me-2"></i>ออกจากระบบ</button>
+                    <button href="#" class="nav-link text-danger hover-effect" onclick="document.getElementById('logout-form').submit();">
+                        <i class="bi bi-box-arrow-right me-2 "></i>ออกจากระบบ</button>
                     <form id="logout-form" action="/logout" method="post" style="display: none;"></form>
                 </li>
             </ul>
