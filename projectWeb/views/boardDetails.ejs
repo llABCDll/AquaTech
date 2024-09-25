@@ -130,10 +130,10 @@
                                     </div>
                                     <h2 class="display-2 fw-bold mb-0 text-center">
                                         <span id="minTemperature" class="text-secondary">
-                                            <%=board.min_temp%>
+                                            <%= board.temp_default.min_temp || 'Not set' %>
                                         </span> °C -
                                         <span id="maxTemperature" class="text-secondary">
-                                            <%=board.max_temp%>
+                                            <%= board.temp_default.max_temp || 'Not set' %>
                                         </span> °C
                                     </h2>
                                 </div>
@@ -328,34 +328,28 @@
             document.getElementById('changeSettingForm').addEventListener('submit', function (event) {
                 event.preventDefault();
 
-                const token = '<%= board.token %>';
-                const minTemp = document.getElementById('minTemp').value;
-                const maxTemp = document.getElementById('maxTemp').value;
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
 
                 fetch('/updateTemp', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ token, minTemp, maxTemp })
+                    body: JSON.stringify(data)
                 })
                     .then(response => response.json())
                     .then(data => {
                         console.log('อุณหภูมิถูกอัปเดต:', data);
 
-                        if (data.length > 0) {
-                            const boardData = data[0];
-                            const tempDefault = JSON.parse(boardData.temp_default);
-                            document.getElementById('minTemperature').textContent = tempDefault.min_temp;
-                            document.getElementById('maxTemperature').textContent = tempDefault.max_temp;
-                        } else {
-                            console.warn('ข้อมูลอุณหภูมิไม่สมบูรณ์:', data);
-                        }
+                        document.getElementById('minTemperature').textContent = data.min_temp;
+                        document.getElementById('maxTemperature').textContent = data.max_temp;
+
                         const modal = bootstrap.Modal.getInstance(document.getElementById('changeSettingModal'));
                         modal.hide();
+
                         alert('การตั้งค่าอุณหภูมิถูกอัปเดตเรียบร้อยแล้ว!');
                     })
-
                     .catch(error => {
                         console.error('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ:', error);
                         alert('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ');
@@ -542,6 +536,8 @@
             });
 
         </script>
+
+
 </body>
 
 </html>
