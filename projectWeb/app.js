@@ -6,12 +6,47 @@ const dbConnection = require('./database');
 const { body, validationResult } = require('express-validator');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
+
 const { timeStamp } = require('console');
 const moment = require('moment-timezone');
 const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+    
+const port = 8080;
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
+
+const WebSocket = require('ws');
+const http = require('http');
+
+
+// สร้าง HTTP server จาก Express
+const server = http.createServer(app);
+
+// สร้าง WebSocket Server
+const wss = new WebSocket.Server({ server }); // เชื่อมต่อกับเซิร์ฟเวอร์ Express
+
+// เมื่อมีการเชื่อมต่อใหม่
+wss.on('connection', (ws) => {
+    console.log('Client connected');
+
+    // ส่งข้อมูล sensor-data ไปยัง client
+    setInterval(() => {
+        dbConnection.query("SELECT token, temp, ph FROM createbtn")
+            .then((result) => {
+                // ส่งข้อมูลเซ็นเซอร์ไปยัง client
+                ws.send(JSON.stringify(result.rows));
+            })
+            .catch((err) => {
+                console.error('Error fetching sensor data:', err);
+            });
+    }, 3000); // อัปเดตทุก ๆ 3 วินาที
+
+    // จัดการการเชื่อมต่อขาด
+    ws.on('close', () => {
+        console.log('Client disconnected');
+    });
+});
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -426,6 +461,33 @@ app.get('/api/token/:boardId', (req, res) => {
         });
 });
 
+// API สำหรับดึงข้อมูล temp และ ph ตาม token
+app.get('/api/sensor-data', async (req, res) => {
+    const { token } = req.query; // รับ token จาก query parameter
+
+    if (!token) {
+        return res.status(400).json({ error: 'Token is required' });
+    }
+
+    try {
+        // Query ข้อมูลจากตาราง createbtn โดยใช้ token
+        const result = await dbConnection.query('SELECT temp, ph FROM createbtn WHERE token = $1', [token]);
+
+        // ถ้าไม่พบข้อมูล
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Data not found' });
+        }
+
+        // ส่งข้อมูลกลับในรูปแบบ JSON
+        const { temp, ph } = result.rows[0];
+        res.json({ temp, ph });
+
+    } catch (error) {
+        console.error('Error fetching sensor data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // api บันทึกค่า temp, ph และ เก็บข้อมูลทุกๆ 1 ชม.
 app.post('/api/data', (req, res) => {
     const { token, temp, ph } = req.body;
@@ -502,37 +564,6 @@ app.post('/api/data', (req, res) => {
         });
 });
 
-// api test
-app.post('/api/test_uptdate', (req, res) => {
-    const { token, temp } = req.body;
-
-    console.log(req.body); // ตรวจสอบข้อมูลที่รับมา
-
-    // ตรวจสอบว่าข้อมูลครบถ้วนหรือไม่
-    if (!token || temp === undefined) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
-    const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
-
-    // อัปเดต temp ใน createbtn
-    dbConnection.query(
-        'UPDATE createbtn SET temp = $1 WHERE token = $2',
-        [temp, token]
-    )
-    .then(() => {
-        res.status(200).json({
-            message: 'Data updated successfully'
-        });
-    })
-    .catch(err => {
-        console.error('Error executing query', err.stack);
-        res.status(500).send('Error updating data');
-    });
-});
-
-
 // api update ค่าสถานะ จาก 1 เป็น 0 
 app.post('/api/updateStatus', (req, res) => {
     const { token, updateStatus } = req.body;
@@ -603,8 +634,7 @@ app.get('/getHourlyData', async (req, res) => {
     }
 });
 
-// เริ่มเซิร์ฟเวอร์
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// เริ่มเซิร์ฟเวอร์ HTTP
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });

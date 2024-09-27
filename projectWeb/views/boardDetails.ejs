@@ -35,12 +35,14 @@
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-white">
             <a class="navbar-brand" href="/home">
-                <img src="/pic/logo.png" alt="โลโก้โปรเจค" height="40" class="d-inline-block align-text-top" style="filter: brightness(0) saturate(100%) invert(18%) sepia(95%) saturate(1644%) hue-rotate(182deg) brightness(94%) contrast(101%);">
+                <img src="/pic/logo.png" alt="โลโก้โปรเจค" height="40" class="d-inline-block align-text-top"
+                    style="filter: brightness(0) saturate(100%) invert(18%) sepia(95%) saturate(1644%) hue-rotate(182deg) brightness(94%) contrast(101%);">
             </a>
             <div class="container-fluid">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a href="/" class="nav-link text-decoration-none fs-6 d-flex align-items-center" style="color: #26648E;">
+                        <a href="/" class="nav-link text-decoration-none fs-6 d-flex align-items-center"
+                            style="color: #26648E;">
                             <i class="fas fa-chevron-left me-1"></i>
                             <span>หน้าหลัก</span>
                         </a>
@@ -55,8 +57,7 @@
                     <h1 class="display-4 text-dark fw-bold text-center animate__animated animate__fadeInDown me-3">
                         รายละเอียด : <%= board.nameboard %>
                     </h1>
-                    <button type="button"
-                        class="btn rounded-pill animate__animated animate__fadeInUp border-0"
+                    <button type="button" class="btn rounded-pill animate__animated animate__fadeInUp border-0"
                         data-bs-toggle="modal" data-bs-target="#changeNameModal">
                         <i class="bi bi-pencil-square"></i>
                     </button>
@@ -80,11 +81,10 @@
                                 <span class="fw-bold text-dark fs-4 me-0 me-md-3 mb-2 mb-md-0">รหัสตู้ปลา :</span>
                                 <span id="tokenText" class="text-muted fs-5 me-0 me-md-3 mb-2 mb-md-0">
                                     <%= board.token %>
-                                    <button id="copyButton" type="button"
-                                        class="btn btn-link p-0 ms-2 text-secondary"
-                                        onclick="copyToClipboard()">
-                                        <i class="bi bi-clipboard"></i>
-                                    </button>
+                                        <button id="copyButton" type="button"
+                                            class="btn btn-link p-0 ms-2 text-secondary" onclick="copyToClipboard()">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
                                 </span>
                             </p>
                         </div>
@@ -94,36 +94,41 @@
                             <div
                                 class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInLeft hover:shadow-xl transition-all position-relative">
                                 <div class="card-body p-4 p-md-5">
-                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                                    <div
+                                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
                                         <h3 class="card-title h2 mb-3 mb-md-0 text-uppercase font-weight-bold">
                                             <strong>อุณหภูมิที่ตั้งไว้</strong>
                                         </h3>
                                         <button type="button"
-                                        class="btn btn-secondary rounded-pill animate__animated animate__fadeInRight border-0 fs-5 px-3 py-2 shadow-sm"
-                                        data-bs-toggle="modal" data-bs-target="#changeSettingModal">
-                                        <strong>ตั้งค่าอุณหภูมิ</strong><i class="bi bi-sliders ms-2"></i>
+                                            class="btn btn-secondary rounded-pill animate__animated animate__fadeInRight border-0 fs-5 px-3 py-2 shadow-sm"
+                                            data-bs-toggle="modal" data-bs-target="#changeSettingModal">
+                                            <strong>ตั้งค่าอุณหภูมิ</strong><i class="bi bi-sliders ms-2"></i>
                                         </button>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <h1 class="fw-bold mb-4 text-center">
                                                 <span class="text-secondary fs-3 fw-bold">
-                                                    <strong>อุณหภูมิต่ำสุด</strong> 
+                                                    <strong>อุณหภูมิต่ำสุด</strong>
                                                 </span>
                                                 <br>
                                                 <span id="minTemperature" class="text-black display-4 fw-bold">
-                                                    <strong><%= board.temp_default.min_temp || 'ไม่ได้ตั้งค่า' %> °C</strong>
+                                                    <strong>
+                                                        <%= board.temp_default.min_temp || 'ไม่ได้ตั้งค่า' %> °C
+                                                    </strong>
                                                 </span>
                                             </h1>
                                         </div>
                                         <div class="col-md-6">
                                             <h1 class="fw-bold mb-0 text-center">
                                                 <span class="text-secondary fs-3 fw-bold">
-                                                    <strong>อุณหภูมิสูงสุด</strong> 
+                                                    <strong>อุณหภูมิสูงสุด</strong>
                                                 </span>
                                                 <br>
                                                 <span id="maxTemperature" class="text-black display-4 fw-bold">
-                                                    <strong><%= board.temp_default.max_temp || 'ไม่ได้ตั้งค่า' %> °C</strong>
+                                                    <strong>
+                                                        <%= board.temp_default.max_temp || 'ไม่ได้ตั้งค่า' %> °C
+                                                    </strong>
                                                 </span>
                                             </h1>
                                         </div>
@@ -135,27 +140,37 @@
 
                     <div class="row mb-4 mb-md-5">
                         <div class="col-12 col-md-6 mb-4 mb-md-0">
-                            <div class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInLeft hover:shadow-xl transition-all position-relative h-100">
+                            <div
+                                class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInLeft hover:shadow-xl transition-all position-relative h-100">
                                 <div class="card-body p-4 p-md-5">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold"><strong>อุณหภูมิปัจจุบัน</strong></h3>
+                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold">
+                                            <strong>อุณหภูมิปัจจุบัน</strong></h3>
                                         <i class="bi bi-thermometer-half text-warning fs-3"></i>
                                     </div>
-                                    <h2 class="display-2 fw-bold mb-0 text-center text-warning" id="temp-display-<%= board.token %>">
-                                        <strong><%= board.temp %> °C</strong>
+                                    <h2 class="display-2 fw-bold mb-0 text-center text-warning"
+                                        id="temp-display-<%= board.token %>">
+                                        <strong>
+                                            <%= board.temp %> °C
+                                        </strong>
                                     </h2>
                                 </div>
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInRight hover:shadow-xl transition-all position-relative h-100">
+                            <div
+                                class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInRight hover:shadow-xl transition-all position-relative h-100">
                                 <div class="card-body p-4 p-md-5">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold"><strong>ค่า pH ปัจจุบัน</strong></h3>
+                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold"><strong>ค่า pH
+                                                ปัจจุบัน</strong></h3>
                                         <i class="bi bi-droplet-half text-primary fs-3"></i>
                                     </div>
-                                    <h2 class="display-2 fw-bold mb-0 text-center text-primary" id="ph-level">
-                                        <strong><%= board.ph %></strong>
+                                    <h2 class="display-2 fw-bold mb-0 text-center text-primary"
+                                        id="ph-display-<%= board.token %>">
+                                        <strong>
+                                            <%= board.ph %>
+                                        </strong>
                                     </h2>
                                 </div>
                             </div>
@@ -209,14 +224,14 @@
                                                 class="form-label fw-bold text-secondary">อุณหภูมิต่ำสุด (°C):</label>
                                             <input type="number" id="minTemp" name="minTemp"
                                                 class="form-control form-control-lg bg-light"
-                                                value="<%= board.min_temp %>" required>
+                                                placeholder="<%= board.temp_default.min_temp%>" required>
                                         </div>
                                         <div class="mb-4">
                                             <label for="maxTemp"
                                                 class="form-label fw-bold text-secondary">อุณหภูมิสูงสุด (°C):</label>
                                             <input type="number" id="maxTemp" name="maxTemp"
                                                 class="form-control form-control-lg bg-light"
-                                                value="<%= board.max_temp %>" required>
+                                                placeholder="<%= board.temp_default.max_temp%>" required>
                                         </div>
                                         <button type="submit"
                                             class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
@@ -270,11 +285,15 @@
                         <div class="container mt-5 animate__animated animate__fadeIn">
                             <div class="card rounded-4 shadow-lg">
                                 <div class="card-body p-4 p-md-5">
-                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">ข้อมูลอุณหภูมิตู้ปลา</h2>
-                                    <p class="text-muted mb-4" data-date style="font-size: 1.1rem;">วันที่ของข้อมูลชุดนี้</p>
+                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">ข้อมูลอุณหภูมิตู้ปลา
+                                    </h2>
+                                    <p class="text-muted mb-4" data-date style="font-size: 1.1rem;">
+                                        วันที่ของข้อมูลชุดนี้</p>
                                     <div class="text-center mb-4">
-                                        <span class="badge bg-secondary me-2 p-2" style="font-size: 1rem;">แกน X: เวลา</span>
-                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y: อุณหภูมิ (°C)</span>
+                                        <span class="badge bg-secondary me-2 p-2" style="font-size: 1rem;">แกน X:
+                                            เวลา</span>
+                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y: อุณหภูมิ
+                                            (°C)</span>
                                     </div>
                                     <canvas id="temperatureChart" width="100%" height="60"></canvas>
                                 </div>
@@ -285,11 +304,15 @@
                         <div class="container mt-5 animate__animated animate__fadeIn">
                             <div class="card rounded-4 shadow-lg">
                                 <div class="card-body p-4 p-md-5">
-                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">ข้อมูล pH ในตู้ปลา</h2>
-                                    <p class="text-muted mb-4" data-date style="font-size: 1.1rem;">วันที่ของข้อมูลชุดนี้</p>
+                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">ข้อมูล pH ในตู้ปลา
+                                    </h2>
+                                    <p class="text-muted mb-4" data-date style="font-size: 1.1rem;">
+                                        วันที่ของข้อมูลชุดนี้</p>
                                     <div class="text-center mb-4">
-                                        <span class="badge bg-secondary me-2 p-2" style="font-size: 1rem;">แกน X: เวลา</span>
-                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y: ค่า pH</span>
+                                        <span class="badge bg-secondary me-2 p-2" style="font-size: 1rem;">แกน X:
+                                            เวลา</span>
+                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y: ค่า
+                                            pH</span>
                                     </div>
                                     <canvas id="pHChart" width="100%" height="60"></canvas>
                                 </div>
@@ -322,7 +345,7 @@
                     </div>
 
                     <script>
-                        document.getElementById('fetchDataBtn').addEventListener('click', function() {
+                        document.getElementById('fetchDataBtn').addEventListener('click', function () {
                             document.getElementById('hiddenContent').style.display = 'block';
                         });
                     </script>
@@ -542,6 +565,38 @@
 
         </script>
 
+        <script>
+            // สร้างการเชื่อมต่อกับ WebSocket Server
+            const socket = new WebSocket('wss://ecprmutiaquarium.azurewebsites.net');  // ใส่พอร์ตของเซิร์ฟเวอร์ที่ใช้
+
+            // เมื่อมีการเชื่อมต่อสำเร็จ
+            socket.onopen = function (event) {
+                console.log('Connected to WebSocket server');
+            };
+
+            // รับข้อมูลจากเซิร์ฟเวอร์
+            socket.onmessage = function (event) {
+                const boards = JSON.parse(event.data); // รับข้อมูลที่ส่งมาจากเซิร์ฟเวอร์
+                boards.forEach(board => {
+                    const tempDisplay = document.getElementById(`temp-display-${board.token}`);
+                    const phDisplay = document.getElementById(`ph-display-${board.token}`);
+                    if (tempDisplay && phDisplay) {
+                        tempDisplay.textContent = `${board.temp} °C`;
+                        phDisplay.textContent = board.ph;
+                    }
+                });
+            };
+
+            // จัดการเมื่อมีข้อผิดพลาด
+            socket.onerror = function (error) {
+                console.error('WebSocket error:', error);
+            };
+
+            // จัดการเมื่อการเชื่อมต่อถูกปิด
+            socket.onclose = function (event) {
+                console.log('WebSocket connection closed');
+            };
+        </script>
 
 </body>
 

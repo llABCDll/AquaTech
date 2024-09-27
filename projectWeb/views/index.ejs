@@ -1,142 +1,163 @@
 <%- include ('head') %>
 
-<body class="animate__animated animate__fadeIn">
-    <%- include ('nav2') %>
+    <body class="animate__animated animate__fadeIn">
+        <%- include ('nav2') %>
 
-    <div class="container mt-5">
-        <div class="d-flex justify-content-end mb-4">
-            <button type="button" class="btn btn-secondary rounded-pill shadow-sm animate__animated animate__bounceIn" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                สร้างบอร์ดใหม่<i class="bi bi-plus-circle-fill ms-2"></i>
-            </button>
-        </div>
-
-        <!-- Modal สร้างบอร์ดใหม่ -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4 border-0 shadow-lg animate__animated animate__zoomIn">
-                    <form action="/createboard" method="post">
-                        <div class="modal-header bg-light text-dark border-bottom">
-                            <h5 class="modal-title fw-bold" id="exampleModalLabel">เปลี่ยนชื่อตู้ปลา</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
-                        </div>
-                        <div class="modal-body p-4 bg-white">
-                            <input type="hidden" name="user_email" value="<%= username %>">
-                            <div class="mb-4">
-                                <label for="nameboard" class="form-label fw-bold text-secondary">ชื่อใหม่ของตู้ปลา:</label>
-                                <input type="text" id="nameboard" name="nameboard" class="form-control form-control-lg bg-light" placeholder="กรุณาใส่ชื่อใหม่" required>
-                            </div>
-                            <input type="hidden" id="tokenInput" name="token">
-                        </div>
-                        <div class="modal-footer bg-light border-top">
-                            <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">ยกเลิก</button>
-                            <button type="submit" class="btn btn-secondary rounded-pill" onclick="setToken()">บันทึก</button>
-                        </div>
-                    </form>
+            <div class="container mt-5">
+                <div class="d-flex justify-content-end mb-4">
+                    <button type="button"
+                        class="btn btn-secondary rounded-pill shadow-sm animate__animated animate__bounceIn"
+                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        สร้างบอร์ดใหม่<i class="bi bi-plus-circle-fill ms-2"></i>
+                    </button>
                 </div>
-            </div>
-        </div>
 
-        <!-- แสดงบอร์ด -->
-        <div class="row g-4">
-            <% if (boards && boards.length > 0) { %>
-                <% boards.forEach((board, index) => { %>
-                    <div class="col-md-6 mb-4 animate__animated animate__fadeInUp" style="animation-delay: <%= index * 0.1 %>s;">
-                        <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden transition-all hover:shadow-xl">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="card-title mb-0 font-weight-bold"><%= board.nameboard %></h5>
-                                    <a href="/board/<%= board.id %>" class="btn btn-sm rounded-pill px-4 py-2 transition-all shadow-sm" style="background-color: #ffffff; border-color: #26648E; color: #26648E;">
-                                        ดูรายละเอียด<i class="bi bi-search ms-2"></i>
-                                    </a>
+                <!-- Modal สร้างบอร์ดใหม่ -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content rounded-4 border-0 shadow-lg animate__animated animate__zoomIn">
+                            <form action="/createboard" method="post">
+                                <div class="modal-header bg-light text-dark border-bottom">
+                                    <h5 class="modal-title fw-bold" id="exampleModalLabel">เปลี่ยนชื่อตู้ปลา</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="ปิด"></button>
                                 </div>
-                                <div class="d-flex justify-content-between">
-                                    <div class="p-3 rounded-3 flex-grow-1 me-1" style="width: 50%; background-color: #FFF3CD; border: 2px solid #FFC107;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0 font-weight-bold text-warning">อุณหภูมิ</h6>
-                                            <i class="bi bi-thermometer-half text-warning"></i>
-                                        </div>
-                                        <div class="h4 fw-bold mb-0 text-end text-warning" id="temp-display-<%= board.token %>">
-                                            <%= board.temp %> °C
-                                        </div>
+                                <div class="modal-body p-4 bg-white">
+                                    <input type="hidden" name="user_email" value="<%= username %>">
+                                    <div class="mb-4">
+                                        <label for="nameboard"
+                                            class="form-label fw-bold text-secondary">ชื่อใหม่ของตู้ปลา:</label>
+                                        <input type="text" id="nameboard" name="nameboard"
+                                            class="form-control form-control-lg bg-light" placeholder="กรุณาใส่ชื่อใหม่"
+                                            required>
                                     </div>
-                                    <div class="p-3 rounded-3 flex-grow-1 ms-1" style="width: 50%; background-color: #E3F2FD; border: 2px solid #2196F3;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0 font-weight-bold text-primary">ค่า pH</h6>
-                                            <i class="bi bi-droplet-half text-primary"></i>
-                                        </div>
-                                        <div class="h4 fw-bold mb-0 text-end text-primary" id="ph-display-<%= board.token %>">
-                                            <%= board.ph %>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" id="tokenInput" name="token">
                                 </div>
-                            </div>
+                                <div class="modal-footer bg-light border-top">
+                                    <button type="button" class="btn btn-outline-secondary rounded-pill"
+                                        data-bs-dismiss="modal">ยกเลิก</button>
+                                    <button type="submit" class="btn btn-secondary rounded-pill"
+                                        onclick="setToken()">บันทึก</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                <% }) %>
-            <% } else { %>
-                <div class="col-12 text-center animate__animated animate__fadeIn">
-                    <p class="text-muted">ยังไม่มีบอร์ดที่สร้าง</p>
                 </div>
-            <% } %>
-        </div>
-    </div>
-        <script>
-            function generateTokens() {
-                const tokenList = document.getElementById('tokenList');
-                tokenList.innerHTML = ''; // Clear previous tokens
-                const token = generateRandomToken();
-                const listItem = document.createElement('li');
-                listItem.textContent = token;
-                tokenList.appendChild(listItem);
-                document.getElementById('tokenInput').value = token;
-            }
 
-            function generateRandomToken() {
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                let token = '';
-                for (let i = 0; i < 25; i++) { // Token length is 25 characters
-                    token += chars.charAt(Math.floor(Math.random() * chars.length));
+                <!-- แสดงบอร์ด -->
+                <div class="row g-4">
+                    <% if (boards && boards.length> 0) { %>
+                        <% boards.forEach((board, index)=> { %>
+                            <div class="col-md-6 mb-4 animate__animated animate__fadeInUp"
+                                style="animation-delay: <%= index * 0.1 %>s;">
+                                <div
+                                    class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden transition-all hover:shadow-xl">
+                                    <div class="card-body p-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="card-title mb-0 font-weight-bold">
+                                                <%= board.nameboard %>
+                                            </h5>
+                                            <a href="/board/<%= board.id %>"
+                                                class="btn btn-sm rounded-pill px-4 py-2 transition-all shadow-sm"
+                                                style="background-color: #ffffff; border-color: #26648E; color: #26648E;">
+                                                ดูรายละเอียด<i class="bi bi-search ms-2"></i>
+                                            </a>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="p-3 rounded-3 flex-grow-1 me-1"
+                                                style="width: 50%; background-color: #FFF3CD; border: 2px solid #FFC107;">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <h6 class="mb-0 font-weight-bold text-warning">อุณหภูมิ</h6>
+                                                    <i class="bi bi-thermometer-half text-warning"></i>
+                                                </div>
+                                                <div class="h4 fw-bold mb-0 text-end text-warning"
+                                                    id="temp-display-<%= board.token %>">
+                                                    <%= board.temp %> °C
+                                                </div>
+                                            </div>
+                                            <div class="p-3 rounded-3 flex-grow-1 ms-1"
+                                                style="width: 50%; background-color: #E3F2FD; border: 2px solid #2196F3;">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <h6 class="mb-0 font-weight-bold text-primary">ค่า pH</h6>
+                                                    <i class="bi bi-droplet-half text-primary"></i>
+                                                </div>
+                                                <div class="h4 fw-bold mb-0 text-end text-primary"
+                                                    id="ph-display-<%= board.token %>">
+                                                    <%= board.ph %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <% } else { %>
+                                    <div class="col-12 text-center animate__animated animate__fadeIn">
+                                        <p class="text-muted">ยังไม่มีบอร์ดที่สร้าง</p>
+                                    </div>
+                                    <% } %>
+                </div>
+            </div>
+            <script>
+                function generateTokens() {
+                    const tokenList = document.getElementById('tokenList');
+                    tokenList.innerHTML = ''; // Clear previous tokens
+                    const token = generateRandomToken();
+                    const listItem = document.createElement('li');
+                    listItem.textContent = token;
+                    tokenList.appendChild(listItem);
+                    document.getElementById('tokenInput').value = token;
                 }
-                return token;
-            }
 
-            function setToken() {
-                const token = generateRandomToken();
-                document.getElementById('tokenInput').value = token;
-            }
-
-            document.querySelector('[data-bs-target="#exampleModal"]').addEventListener('click', generateTokens);
-        </script>
-        <script>
-            function updateBoardData(token, newTemp, newPh) {
-                const tempDisplay = document.getElementById(`temp-display-${token}`);
-                const phDisplay = document.getElementById(`ph-display-${token}`);
-
-                if (tempDisplay) {
-                    tempDisplay.textContent = `${newTemp} °C`;
-                    tempDisplay.classList.add('animate__animated', 'animate__pulse');
-                    setTimeout(() => tempDisplay.classList.remove('animate__animated', 'animate__pulse'), 1000);
+                function generateRandomToken() {
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    let token = '';
+                    for (let i = 0; i < 25; i++) { // Token length is 25 characters
+                        token += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    return token;
                 }
 
-                if (phDisplay) {
-                    phDisplay.textContent = `${newPh}`;
-                    phDisplay.classList.add('animate__animated', 'animate__pulse');
-                    setTimeout(() => phDisplay.classList.remove('animate__animated', 'animate__pulse'), 1000);
+                function setToken() {
+                    const token = generateRandomToken();
+                    document.getElementById('tokenInput').value = token; // กำหนดค่า token ให้กับ input field
                 }
-            }
-            // Update data every 10 seconds
-            setInterval(() => {
-                fetch('/api/getBoardUpdates')
-                    .then(response => response.json())
-                    .then(data => {
-                        data.boards.forEach(board => {
-                            updateBoardData(board.token, board.new_temp, board.ph);
-                            // Send status 1 to ESP32 if necessary
-                            sendToESP32(1);
-                        });
+                document.querySelector('[data-bs-target="#exampleModal"]').addEventListener('click', generateTokens);
+            </script>
+
+            <script>
+                // สร้างการเชื่อมต่อกับ WebSocket Server
+                const socket = new WebSocket('wss://ecprmutiaquarium.azurewebsites.net');  // ใส่พอร์ตของเซิร์ฟเวอร์ที่ใช้
+
+                // เมื่อมีการเชื่อมต่อสำเร็จ
+                socket.onopen = function (event) {
+                    console.log('Connected to WebSocket server');
+                };
+
+                // รับข้อมูลจากเซิร์ฟเวอร์
+                socket.onmessage = function (event) {
+                    const boards = JSON.parse(event.data); // รับข้อมูลที่ส่งมาจากเซิร์ฟเวอร์
+                    boards.forEach(board => {
+                        const tempDisplay = document.getElementById(`temp-display-${board.token}`);
+                        const phDisplay = document.getElementById(`ph-display-${board.token}`);
+                        if (tempDisplay && phDisplay) {
+                            tempDisplay.textContent = `${board.temp} °C`;
+                            phDisplay.textContent = board.ph;
+                        }
                     });
-            }, 1000); // Update every 10 seconds
-        </script>
-</body>
+                };
 
-</html>
+                // จัดการเมื่อมีข้อผิดพลาด
+                socket.onerror = function (error) {
+                    console.error('WebSocket error:', error);
+                };
+
+                // จัดการเมื่อการเชื่อมต่อถูกปิด
+                socket.onclose = function (event) {
+                    console.log('WebSocket connection closed');
+                };
+            </script>
+    </body>
+
+    </html>
