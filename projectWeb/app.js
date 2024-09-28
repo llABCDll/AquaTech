@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 const { timeStamp } = require('console');
 const moment = require('moment-timezone');
 const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
-    
+
 const port = 8080;
 
 const app = express();
@@ -291,7 +291,32 @@ app.post('/updateName', (req, res) => {
 });
 
 // updateTemp
-app.post('/updateTemp', async (req, res) => {
+app.post('/updateTemp', (req, res) => {
+    const { token, temp } = req.body;
+
+    console.log(req.body);
+
+    // เริ่มต้นด้วยการอัปเดตค่า new_temp และ update_status
+    dbConnection.query(
+        'UPDATE createbtn SET new_temp = $1, update_status = 1 WHERE token = $2',
+        [temp, token]
+    )
+        .then(() => {
+            // ดึงข้อมูลที่อัปเดตแล้วและเรียงตาม id
+            return dbConnection.query('SELECT * FROM createbtn ORDER BY id ASC');
+        })
+        .then(result => {
+            // ส่งข้อมูลที่อัปเดตกลับไปยังหน้าเว็บหรือทำสิ่งที่ต้องการ
+            res.status(200).json(result.rows);
+        })
+        .catch(err => {
+            console.error('Error updating temperature:', err);
+            res.status(500).send('Failed to update temperature');
+        });
+});
+
+// updateTemplable
+app.post('/updateTemplabel', async (req, res) => {
     const { token, minTemp, maxTemp } = req.body;
 
     try {

@@ -55,7 +55,10 @@
             <div class="card-body p-3 p-md-5">
                 <div class="d-flex justify-content-center align-items-center mb-4 mb-md-5">
                     <h1 class="display-4 text-dark fw-bold text-center animate__animated animate__fadeInDown me-3">
-                        รายละเอียด : <%= board.nameboard %>
+                        รายละเอียด : <h2 id="currentName"
+                            class="display-4 text-dark fw-bold text-center animate__animated animate__fadeInDown me-3">
+                            <%= board.nameboard %>
+                        </h2>
                     </h1>
                     <button type="button" class="btn rounded-pill animate__animated animate__fadeInUp border-0"
                         data-bs-toggle="modal" data-bs-target="#changeNameModal">
@@ -97,11 +100,11 @@
                                     <div
                                         class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
                                         <h3 class="card-title h2 mb-3 mb-md-0 text-uppercase font-weight-bold">
-                                            <strong>อุณหภูมิที่ตั้งไว้</strong>
+                                            <strong>อุณหภูมิที่เครื่องสามารถทำได้</strong>
                                         </h3>
                                         <button type="button"
                                             class="btn btn-secondary rounded-pill animate__animated animate__fadeInRight border-0 fs-5 px-3 py-2 shadow-sm"
-                                            data-bs-toggle="modal" data-bs-target="#changeSettingModal">
+                                            data-bs-toggle="modal" data-bs-target="#changeMinMaxTempModal">
                                             <strong>ตั้งค่าอุณหภูมิ</strong><i class="bi bi-sliders ms-2"></i>
                                         </button>
                                     </div>
@@ -137,6 +140,22 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Change General Temperature Button -->
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#changeGeneralTempModal">
+                        เปลี่ยนอุณหภูมิ
+                    </button>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h3 class="text-primary fw-bold mb-2">อุณหภูมิที่ตั้งไว้</h3>
+                            <h2 class="display-4 text-dark fw-bold">
+                                <span id="currentTemperature">
+                                    <%= board.new_temp %>
+                                </span> °C
+                            </h2>
+                        </div>
+                    </div>
+
 
                     <div class="row mb-4 mb-md-5">
                         <div class="col-12 col-md-6 mb-4 mb-md-0">
@@ -145,7 +164,8 @@
                                 <div class="card-body p-4 p-md-5">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
                                         <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold">
-                                            <strong>อุณหภูมิปัจจุบัน</strong></h3>
+                                            <strong>อุณหภูมิปัจจุบัน</strong>
+                                        </h3>
                                         <i class="bi bi-thermometer-half text-warning fs-3"></i>
                                     </div>
                                     <h2 class="display-2 fw-bold mb-0 text-center text-warning"
@@ -205,33 +225,36 @@
                         </div>
                     </div>
 
-                    <!-- Modal for Changing Settings -->
-                    <div class="modal fade" id="changeSettingModal" tabindex="-1"
-                        aria-labelledby="changeSettingModalLabel" aria-hidden="true">
+                    <!-- Change Min/Max Temperature Modal -->
+                    <div class="modal fade" id="changeMinMaxTempModal" tabindex="-1"
+                        aria-labelledby="changeMinMaxTempModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content rounded-4 border-0 shadow-lg">
                                 <div class="modal-header bg-light text-dark border-bottom">
-                                    <h5 class="modal-title fw-bold" id="changeSettingModalLabel">
-                                        ปรับการตั้งค่าอุณหภูมิตู้ปลา</h5>
+                                    <h5>
+                                        เปลี่ยนอุณหภูมิต่ำสุดและอุณหภูมิสูงที่สามารถทำได้
+                                    </h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body p-4 bg-white">
-                                    <form id="changeSettingForm">
+                                    <form id="changeMinMaxTempForm">
                                         <input type="hidden" name="token" value="<%= board.token %>">
                                         <div class="mb-4">
                                             <label for="minTemp"
-                                                class="form-label fw-bold text-secondary">อุณหภูมิต่ำสุด (°C):</label>
+                                                class="form-label fw-bold text-secondary">อุณหภูมิต่ำสุด
+                                                (°C):</label>
                                             <input type="number" id="minTemp" name="minTemp"
                                                 class="form-control form-control-lg bg-light"
-                                                placeholder="<%= board.temp_default.min_temp%>" required>
+                                                placeholder="<%= board.temp_default.min_temp %>" required min="20" max="29">
                                         </div>
                                         <div class="mb-4">
                                             <label for="maxTemp"
-                                                class="form-label fw-bold text-secondary">อุณหภูมิสูงสุด (°C):</label>
+                                                class="form-label fw-bold text-secondary">อุณหภูมิสูงสุด
+                                                (°C):</label>
                                             <input type="number" id="maxTemp" name="maxTemp"
                                                 class="form-control form-control-lg bg-light"
-                                                placeholder="<%= board.temp_default.max_temp%>" required>
+                                                placeholder="<%= board.temp_default.max_temp %>" required min="20" max="29">
                                         </div>
                                         <button type="submit"
                                             class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
@@ -241,6 +264,35 @@
                         </div>
                     </div>
 
+                    <!-- Change General Temperature Modal -->
+                    <div class="modal fade" id="changeGeneralTempModal" tabindex="-1"
+                        aria-labelledby="changeGeneralTempModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-4 border-0 shadow-lg">
+                                <div class="modal-header bg-light text-dark border-bottom">
+                                    <h5 class="modal-title fw-bold" id="changeGeneralTempModalLabel">
+                                        เปลี่ยนอุณหภูมิ</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 bg-white">
+                                    <form id="changeGeneralTempForm">
+                                        <input type="hidden" name="token" value="<%= board.token %>">
+                                        <div class="mb-4">
+                                            <label for="generalTemp"
+                                                class="form-label fw-bold text-secondary">อุณหภูมิทั่วไป
+                                                (°C):</label>
+                                            <input type="number" id="generalTemp" name="generalTemp"
+                                                class="form-control form-control-lg bg-light"
+                                                placeholder="<%= board.new_temp %>" required min="20" max="29">
+                                        </div>
+                                        <button type="submit"
+                                            class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Modal ยืนยันการลบ -->
                     <div class="modal fade" id="confirmDeleteModal-<%= board.id %>" tabindex="-1"
@@ -249,7 +301,8 @@
                             <div class="modal-content border-0 shadow-lg rounded-4">
                                 <div class="modal-header bg-danger text-white">
                                     <h5 class="modal-title font-weight-bold"
-                                        id="confirmDeleteModalLabel-<%= board.id %>">ยืนยันการลบ</h5>
+                                        id="confirmDeleteModalLabel-<%= board.id %>">
+                                        ยืนยันการลบ</h5>
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                         aria-label="ปิด"></button>
                                 </div>
@@ -285,14 +338,16 @@
                         <div class="container mt-5 animate__animated animate__fadeIn">
                             <div class="card rounded-4 shadow-lg">
                                 <div class="card-body p-4 p-md-5">
-                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">ข้อมูลอุณหภูมิตู้ปลา
+                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">
+                                        ข้อมูลอุณหภูมิตู้ปลา
                                     </h2>
                                     <p class="text-muted mb-4" data-date style="font-size: 1.1rem;">
                                         วันที่ของข้อมูลชุดนี้</p>
                                     <div class="text-center mb-4">
                                         <span class="badge bg-secondary me-2 p-2" style="font-size: 1rem;">แกน X:
                                             เวลา</span>
-                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y: อุณหภูมิ
+                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y:
+                                            อุณหภูมิ
                                             (°C)</span>
                                     </div>
                                     <canvas id="temperatureChart" width="100%" height="60"></canvas>
@@ -304,14 +359,16 @@
                         <div class="container mt-5 animate__animated animate__fadeIn">
                             <div class="card rounded-4 shadow-lg">
                                 <div class="card-body p-4 p-md-5">
-                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">ข้อมูล pH ในตู้ปลา
+                                    <h2 class="card-title mb-4 fw-bold" style="font-size: 1.8rem;">ข้อมูล pH
+                                        ในตู้ปลา
                                     </h2>
                                     <p class="text-muted mb-4" data-date style="font-size: 1.1rem;">
                                         วันที่ของข้อมูลชุดนี้</p>
                                     <div class="text-center mb-4">
                                         <span class="badge bg-secondary me-2 p-2" style="font-size: 1rem;">แกน X:
                                             เวลา</span>
-                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y: ค่า
+                                        <span class="badge bg-secondary p-2" style="font-size: 1rem;">แกน Y:
+                                            ค่า
                                             pH</span>
                                     </div>
                                     <canvas id="pHChart" width="100%" height="60"></canvas>
@@ -344,6 +401,27 @@
                         </div>
                     </div>
 
+                    <!-- Bootstrap Toast -->
+                    <div id="successToast" class="toast position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+                        <div class="toast-header">
+                            <strong class="me-auto">แจ้งเตือน</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            ส่งคำขออัปเดตอุณหภูมิสำเร็จ!
+                        </div>
+                    </div>
+
+                    <!-- Bootstrap Toast for Success Messages -->
+                    <div id="successToast_ChangeName" class="toast position-fixed top-0 end-0 p-3"
+                        style="z-index: 1050;">
+                        <div class="toast-header">
+                            <strong class="me-auto">แจ้งเตือน</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body" id="toastMessage">ส่งคำขอเปลี่ยนชื่สำเร็จ!</div>
+                    </div>
+
                     <script>
                         document.getElementById('fetchDataBtn').addEventListener('click', function () {
                             document.getElementById('hiddenContent').style.display = 'block';
@@ -352,62 +430,141 @@
                 </div>
             </div>
         </div>
+
         <script>
-            document.getElementById('changeSettingForm').addEventListener('submit', function (event) {
-                event.preventDefault();
+            document.addEventListener('DOMContentLoaded', function () {
+                const minMaxTempForm = document.getElementById('changeMinMaxTempForm');
 
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData.entries());
+                minMaxTempForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
 
-                fetch('/updateTemp', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('อุณหภูมิถูกอัปเดต:', data);
+                    const formData = new FormData(minMaxTempForm);
+                    const token = formData.get('token');
+                    const minTemp = formData.get('minTemp');
+                    const maxTemp = formData.get('maxTemp');
 
-                        document.getElementById('minTemperature').textContent = data.min_temp;
-                        document.getElementById('maxTemperature').textContent = data.max_temp;
+                    if (minTemp === null || minTemp === '' || maxTemp === null || maxTemp === '') {
+                        alert('Please enter valid temperatures');
+                        return;
+                    }
 
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('changeSettingModal'));
-                        modal.hide();
-
-                        alert('การตั้งค่าอุณหภูมิถูกอัปเดตเรียบร้อยแล้ว!');
+                    fetch('/updateTemplabel', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ token, minTemp, maxTemp })
                     })
-                    .catch(error => {
-                        console.error('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ:', error);
-                        alert('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ');
-                    });
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Min and Max temperatures updated successfully!');
+                                document.getElementById('currentMinTemp').textContent = minTemp;
+                                document.getElementById('currentMaxTemp').textContent = maxTemp;
+                            } else {
+                                alert('Failed to update Min and Max temperatures');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Failed to update Min and Max temperatures');
+                        });
+                });
             });
         </script>
 
         <script>
-            document.getElementById('changeNameButton').addEventListener('click', () => {
-                const formData = new FormData(document.getElementById('changeNameForm'));
+            document.addEventListener('DOMContentLoaded', function () {
+                const generalTempForm = document.getElementById('changeGeneralTempForm');
 
-                fetch(document.getElementById('changeNameForm').action, {
-                    method: 'POST',
-                    body: new URLSearchParams(formData),
-                })
-                    .then(response => response.text())
-                    .then(result => {
-                        alert(result);
-                        // อัพเดตชื่อในหน้าเว็บ
-                        document.getElementById('currentName').textContent = formData.get('name');
-                        // ล้างฟอร์ม
-                        document.getElementById('changeNameForm').reset();
-                        // ปิดโมดัล
-                        bootstrap.Modal.getInstance(document.getElementById('changeNameModal')).hide();
+                generalTempForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    const formData = new FormData(generalTempForm);
+                    const token = formData.get('token');
+                    const temp = formData.get('generalTemp');
+
+                    if (temp === null || temp === '') {
+                        alert('กรุณากรอกอุณหภูมิที่ถูกต้อง');
+                        return;
+                    }
+
+                    fetch('/updateTemp', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ token, temp })
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                        .then(response => {
+                            if (response.ok) {
+                                const currentTempElement = document.getElementById('currentTemperature');
+                                if (currentTempElement) {
+                                    currentTempElement.textContent = temp; // อัปเดตค่าอุณหภูมิ
+                                } else {
+                                    console.error('ไม่พบ element ที่ชื่อ currentTemperature');
+                                }
+
+                                // ซ่อน modal หลังจากส่งคำขอสำเร็จ
+                                const modalElement = document.getElementById('changeGeneralTempModal');
+                                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                                if (modalInstance) {
+                                    modalInstance.hide(); // ซ่อน modal ถ้ามี instance
+
+                                    // แสดง Toast หลังจากโมดัลถูกซ่อน
+                                    const toastEl = document.getElementById('successToast');
+                                    const toast = new bootstrap.Toast(toastEl);
+                                    toast.show(); // แสดง Toast
+                                } else {
+                                    console.error('ไม่พบ modal instance');
+                                }
+                            } else {
+                                alert('ส่งคำขออัปเดตล้มเหลว');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('เกิดข้อผิดพลาด:', error);
+                            alert('ส่งคำขออัปเดตล้มเหลว');
+                        });
+                });
             });
         </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('changeNameButton').addEventListener('click', () => {
+                    const formData = new FormData(document.getElementById('changeNameForm'));
+
+                    fetch(document.getElementById('changeNameForm').action, {
+                        method: 'POST',
+                        body: new URLSearchParams(formData),
+                    })
+                        .then(response => response.text())
+                        .then(result => {
+                            // อัพเดตชื่อในหน้าเว็บ
+                            const currentNameElement = document.getElementById('currentName');
+                            if (currentNameElement) {
+                                currentNameElement.textContent = formData.get('name');
+                            } else {
+                                console.error('ไม่พบ element ที่ชื่อ currentName');
+                            }
+
+                            // ล้างฟอร์ม
+                            document.getElementById('changeNameForm').reset();
+
+                            // ปิดโมดัล
+                            bootstrap.Modal.getInstance(document.getElementById('changeNameModal')).hide();
+
+                            // แสดง Toast
+                            const toast = new bootstrap.Toast(document.getElementById('successToast_ChangeName'));
+                            toast.show(); // แสดง Toast
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                });
+            });
+        </script>
+
 
         <script>
             function copyToClipboard() {
