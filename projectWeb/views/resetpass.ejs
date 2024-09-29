@@ -9,6 +9,22 @@
                     <div class="card-body p-5">
                         <h2 class="text-center mb-4 fw-bold animate__animated animate__fadeIn" style="color: #26648E;">รีเซ็ตรหัสผ่าน</h2>
                         
+                        <style>
+                            .alert ul {
+                                list-style-type: none;
+                                padding-left: 0;
+                            }
+                        </style>
+                        <% if (locals.resetpass_error && resetpass_error.length > 0) { %>
+                            <div class="alert alert-danger border-0 rounded-3 animate__animated animate__fadeIn" id="alert" role="alert">
+                                <ul class="mb-0">
+                                    <% resetpass_error.forEach(error => { %>
+                                        <li><%= error.replace(/\.$/, '') %></li>
+                                    <% }) %>
+                                </ul>
+                            </div>
+                        <% } %>
+                        
                         <form action="/resetpass" method="post" novalidate class="needs-validation animate__animated animate__fadeIn">
                             <input type="hidden" name="token" value="<%= token %>">
                             <div class="mb-4">
@@ -17,16 +33,12 @@
                                     <input type="password" name="user_pass" id="_rpass" class="form-control form-control-lg" placeholder="รหัสผ่านใหม่" required>
                                 </div>
                             </div>
-                            
-                            <% if (locals.resetpass_error) { %>
-                                <div class="alert alert-light border rounded-3 animate__animated animate__fadeIn" id="alert" style="border-color: #26648E;">
-                                    <ul class="mb-0 text-dark">
-                                        <% resetpass_error.forEach(function(resetpass_msg, index) { %>
-                                            <li><%= resetpass_msg %></li>
-                                        <% }) %>
-                                    </ul>
+                            <div class="mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background-color: #26648E; color: white;"><i class="bi bi-lock-fill"></i></span>
+                                    <input type="password" name="confirm_pass" id="_confirm_pass" class="form-control form-control-lg" placeholder="ยืนยันรหัสผ่านใหม่" required>
                                 </div>
-                            <% } %>
+                            </div>
                             
                             <button type="submit" class="btn btn-md w-100 mb-4 shadow-sm hover-effect rounded-pill" style="background-color: #26648E; color: white;">ยืนยัน</button>
                         </form>
@@ -35,14 +47,18 @@
             </div>
         </div>
     </div>
-    <script>
-        // ซ่อนข้อความแจ้งเตือนหลังจาก 3 วินาที
-        setTimeout(function () {
-            document.querySelectorAll('.alert').forEach(function (alert) {
-                alert.style.display = 'none';
-            });
-        }, 3000);
-    </script>
+    
+    <!-- <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            var password = document.getElementById('_rpass').value;
+            var confirmPassword = document.getElementById('_confirm_pass').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบและลองอีกครั้ง');
+            }
+        });
+    </script> -->
 </body>
 
 </html>

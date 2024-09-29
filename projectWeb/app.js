@@ -38,7 +38,7 @@ wss.on('connection', (ws) => {
                 ws.send(JSON.stringify(result.rows));
             })
             .catch((err) => {
-                console.error('Error fetching sensor data:', err);
+                console.error('เกิดข้อผิดพลาดในการดึงข้อมูลเซ็นเซอร์:', err);
             });
     }, 3000); // อัปเดตทุก ๆ 3 วินาที
 
@@ -123,7 +123,7 @@ app.get('/resetpass', (req, res) => {
     if (token) {
         res.render('resetpass', { token });
     } else {
-        res.status(400).send('Token is missing');
+        res.status(400).send('ไม่พบ Token');
     }
 });
 
@@ -140,53 +140,63 @@ app.get('/', ifNotLoggedIn, (req, res, next) => {
                         });
                     })
                     .catch(err => {
-                        console.error('Error fetching boards:', err);
+                        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลบอร์ด:', err);
                         res.render('index', {
                             username: userEmail,
                             boards: []
                         });
                     });
             } else {
-                res.status(404).send('User not found');
+                res.status(404).send('ไม่พบผู้ใช้');
             }
         })
         .catch(err => {
-            console.error('Error fetching user data:', err);
-            res.status(500).send('Error fetching user data');
+            console.error('เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้:', err);
+            res.status(500).send('เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้');
         });
 });
 
 // register
 app.post('/register', ifLoggedIn, [
-    body('user_email', 'Invalid Email Address!').isEmail().custom((value) => {
+    body('user_email', 'อีเมลไม่ถูกต้อง!').isEmail().custom((value) => {
         return dbConnection.query('SELECT email FROM users_iptcn WHERE email = $1', [value])
             .then(({ rows }) => {
                 if (rows.length > 0) {
-                    return Promise.reject('Email already in use!');
+                    return Promise.reject('อีเมลนี้ถูกใช้งานแล้ว!');
                 }
             });
     }),
-    body('user_name', 'Username is empty!').trim().not().isEmpty(),
-    body('user_pass', 'The password must be at least 6 characters long').trim().isLength({ min: 6 }),
+    body('user_name', 'ชื่อผู้ใช้ว่างเปล่า!').trim().not().isEmpty(),
+    body('user_pass', 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร').trim().isLength({ min: 6 }),
 ], (req, res, next) => {
     const validation_result = validationResult(req);
     const { user_name, user_pass, user_email } = req.body;
+
+    if (!user_name || !user_pass || !user_email) {
+        return res.render('register', {
+            register_error: ['กรุณากรอกข้อมูลให้ครบถ้วน'],
+            old_data: req.body
+        });
+    }
 
     if (validation_result.isEmpty()) {
         bcrypt.hash(user_pass, 12)
             .then((hashedPassword) => {
                 dbConnection.query("INSERT INTO users_iptcn (username, email, password) VALUES ($1, $2, $3)", [user_name, user_email, hashedPassword])
                     .then(() => {
-                        res.send(`Your account has been created successfully. Now you can <a href="/">Login</a>`);
+                        res.render('login', {
+                            success_message: 'สมัครสำเร็จแล้ว',
+                            showPopup: true
+                        });
                     })
                     .catch(err => {
-                        console.error('Error inserting user:', err);
-                        res.status(500).send('Error creating user');
+                        console.error('เกิดข้อผิดพลาดในการสร้างผู้ใช้:', err);
+                        res.status(500).send('เกิดข้อผิดพลาดในการสร้างผู้ใช้');
                     });
             })
             .catch(err => {
-                console.error('Error hashing password:', err);
-                res.status(500).send('Error hashing password');
+                console.error('เกิดข้อผิดพลาดในการเข้ารหัสรหัสผ่าน:', err);
+                res.status(500).send('เกิดข้อผิดพลาดในการเข้ารหัสรหัสผ่าน');
             });
     } else {
         let allErrors = validation_result.errors.map((error) => error.msg);
@@ -206,13 +216,19 @@ app.post('/login', ifLoggedIn, [
                 if (rows.length === 1) {
                     return true;
                 }
-                return Promise.reject('Invalid Email Address!');
+                return Promise.reject('อีเมลไม่ถูกต้อง!');
             });
     }),
-    body('user_pass', 'Password is empty').trim().not().isEmpty(),
+    body('user_pass', 'รหัสผ่านว่างเปล่า').trim().not().isEmpty(),
 ], (req, res) => {
     const validation_result = validationResult(req);
     const { user_pass, user_email } = req.body;
+
+    if (!user_email || !user_pass) {
+        return res.render('login', {
+            login_errors: ['กรุณากรอกข้อมูลให้ครบถ้วน']
+        });
+    }
 
     if (validation_result.isEmpty()) {
         dbConnection.query("SELECT * FROM users_iptcn WHERE email = $1", [user_email])
@@ -227,19 +243,19 @@ app.post('/login', ifLoggedIn, [
                             res.redirect('/');
                         } else {
                             res.render('login', {
-                                login_errors: ['Invalid Password']
+                                login_errors: ['รหัสผ่านไม่ถูกต้อง']
                             });
                         }
                     })
                     .catch(err => {
-                        console.error('Error comparing passwords:', err);
-                        res.status(500).send('Error comparing passwords');
+                        console.error('เกิดข้อผิดพลาดในการเปรียบเทียบรหัสผ่าน:', err);
+                        res.status(500).send('เกิดข้อผิดพลาดในการเปรียบเทียบรหัสผ่าน');
                     });
 
             })
             .catch(err => {
-                console.error('Error selecting user:', err);
-                res.status(500).send('Error selecting user');
+                console.error('เกิดข้อผิดพลาดในการเลือกผู้ใช้:', err);
+                res.status(500).send('เกิดข้อผิดพลาดในการเลือกผู้ใช้');
             });
     } else {
         let allErrors = validation_result.errors.map((error) => error.msg);
@@ -265,8 +281,8 @@ app.post('/createboard', ifNotLoggedIn, (req, res) => {
             res.redirect('/');
         })
         .catch(err => {
-            console.error('Error inserting board:', err);
-            res.status(500).send('Error creating board');
+            console.error('เกิดข้อผิดพลาดในการสร้างบอร์ด:', err);
+            res.status(500).send('เกิดข้อผิดพลาดในการสร้างบอร์ด');
         });
 });
 
@@ -275,18 +291,18 @@ app.post('/updateName', (req, res) => {
     const { token, name } = req.body;
 
     if (!token || !name) {
-        return res.status(400).send('Both token and name are required');
+        return res.status(400).send('ต้องระบุทั้ง token และชื่อ');
     }
 
     const query = `UPDATE createbtn SET nameboard = $1 WHERE token = $2`;
 
     dbConnection.query(query, [name, token])
         .then(() => {
-            res.send('Name updated successfully!');
+            res.send('อัปเดตชื่อสำเร็จ!');
         })
         .catch(err => {
-            console.error('Error updating name:', err);
-            res.status(500).send('Failed to update name');
+            console.error('เกิดข้อผิดพลาดในการอัปเดตชื่อ:', err);
+            res.status(500).send('ไม่สามารถอัปเดตชื่อได้');
         });
 });
 
@@ -310,8 +326,8 @@ app.post('/updateTemp', (req, res) => {
             res.status(200).json(result.rows);
         })
         .catch(err => {
-            console.error('Error updating temperature:', err);
-            res.status(500).send('Failed to update temperature');
+            console.error('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ:', err);
+            res.status(500).send('ไม่สามารถอัปเดตอุณหภูมิได้');
         });
 });
 
@@ -342,8 +358,8 @@ app.post('/updateTemp', (req, res) => {
 //             max_temp: result.rows[0].temp_default.max_temp
 //         });
 //     } catch (err) {
-//         console.error('Error updating temperature:', err);
-//         res.status(500).send('Failed to update temperature');
+//         console.error('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ:', err);
+//         res.status(500).send('ไม่สามารถอัปเดตอุณหภูมิได้');
 //     }
 // });
 
@@ -360,8 +376,8 @@ app.get('/dashboard', ifLoggedIn, (req, res) => {
             });
         })
         .catch(err => {
-            console.error('Error fetching boards:', err);
-            res.status(500).send('Error fetching boards');
+            console.error('เกิดข้อผิดพลาดในการดึงข้อมูลบอร์ด:', err);
+            res.status(500).send('เกิดข้อผิดพลาดในการดึงข้อมูลบอร์ด');
         });
 });
 
@@ -376,8 +392,8 @@ app.post('/deleteboard', ifNotLoggedIn, (req, res) => {
             res.redirect('/');
         })
         .catch(err => {
-            console.error('Error deleting board:', err);
-            res.status(500).send('Error deleting board');
+            console.error('เกิดข้อผิดพลาดในการลบบอร์ด:', err);
+            res.status(500).send('เกิดข้อผิดพลาดในการลบบอร์ด');
         });
 });
 
@@ -391,22 +407,22 @@ app.get('/board/:id', ifNotLoggedIn, (req, res) => {
                     board: result.rows[0],
                 });
             } else {
-                res.status(404).send('Board not found');
+                res.status(404).send('ไม่พบบอร์ด');
             }
         })
         .catch(err => {
-            console.error('Error fetching board details:', err);
-            res.status(500).send('Error fetching board details');
+            console.error('เกิดข้อผิดพลาดในการดึงรายละเอียดบอร์ด:', err);
+            res.status(500).send('เกิดข้อผิดพลาดในการดึงรายละเอียดบอร์ด');
         });
 });
 
 // forgot password 
 app.post('/forgotpass', ifLoggedIn, [
-    body('user_email', 'ที่อยู่อีเมลไม่ถูกต้อง!').isEmail().custom((value) => {
+    body('user_email', 'กรุณากรอกที่อยู่อีเมลให้ถูกต้อง').isEmail().custom((value) => {
         return dbConnection.query('SELECT email FROM users_iptcn WHERE email = $1', [value])
             .then(({ rows }) => {
                 if (rows.length === 0) {
-                    return Promise.reject('ไม่พบอีเมล!');
+                    return Promise.reject('ไม่พบอีเมลนี้ในระบบ กรุณาตรวจสอบและลองใหม่อีกครั้ง');
                 }
             });
     })
@@ -414,19 +430,28 @@ app.post('/forgotpass', ifLoggedIn, [
     const validation_result = validationResult(req);
     const { user_email } = req.body;
 
+    if (!user_email) {
+        return res.render('forgotpass', {
+            forgotpass_error: ['กรุณากรอกอีเมลของคุณ']
+        });
+    }
+
     if (validation_result.isEmpty()) {
-        // สร้าง token และจัดเก็บในฐานข้อมูล
-        const token = generateRandomToken(); // สร้าง token
+        const token = generateRandomToken();
 
         dbConnection.query('UPDATE users_iptcn SET reset_token = $1 WHERE email = $2', [token, user_email])
             .then(() => {
-                // ส่งอีเมลที่มีลิงก์รีเซ็ตรหัสผ่านให้กับผู้ใช้
-                // ตัวอย่าง: /resetpass?token=your_generated_token
-                res.render('resetpass', { email: user_email, token: token });
+                res.render('resetpass', { 
+                    email: user_email, 
+                    token: token,
+                    success_message: 'กรุณาตรวจสอบอีเมลของคุณเพื่อรีเซ็ตรหัสผ่าน'
+                });
             })
             .catch(err => {
-                console.error('ข้อผิดพลาดในการอัปเดต token:', err);
-                res.status(500).send('ข้อผิดพลาดในการอัปเดต token');
+                console.error('เกิดข้อผิดพลาดในการอัปเดตโทเคน:', err);
+                res.render('forgotpass', {
+                    forgotpass_error: ['เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่อีกครั้ง']
+                });
             });
     } else {
         let allErrors = validation_result.errors.map((error) => error.msg);
@@ -438,32 +463,49 @@ app.post('/forgotpass', ifLoggedIn, [
 
 // set new password 
 app.post('/resetpass', [
-    body('user_pass', 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร').trim().isLength({ min: 6 })
+    body('user_pass', 'กรุณากรอกรหัสผ่านอย่างน้อย 6 ตัวอักษร').trim().isLength({ min: 6 }),
+    body('confirm_pass', 'กรุณายืนยันรหัสผ่าน').notEmpty(),
+    body('confirm_pass', 'รหัสผ่านไม่ตรงกัน').custom((value, { req }) => {
+        if (value !== req.body.user_pass) {
+            return false;
+        }
+        return true;
+    })
 ], (req, res) => {
     const validation_result = validationResult(req);
-    const { user_pass, token } = req.body;
+    const { user_pass, confirm_pass, token } = req.body;
+
+    if (!user_pass || !confirm_pass) {
+        return res.render('resetpass', {
+            resetpass_error: ['กรุณากรอกข้อมูลให้ครบถ้วน'],
+            token: token
+        });
+    }
 
     if (validation_result.isEmpty()) {
         bcrypt.hash(user_pass, 12)
             .then((hashedPassword) => {
-                dbConnection.query("UPDATE users_iptcn SET password = $1 WHERE reset_token = $2", [hashedPassword, token])
-                    .then(() => {
-                        res.send('รหัสผ่านของคุณได้รับการอัปเดตเรียบร้อยแล้ว คุณสามารถ <a href="/login">เข้าสู่ระบบ</a> ได้แล้ว');
-                    })
+                dbConnection.query("UPDATE users_iptcn SET password = $1, reset_token = NULL WHERE reset_token = $2", [hashedPassword, token])
+                .then(() => {
+                    res.render('login', {
+                        success_message: 'เปลี่ยนรหัสผ่านสำเร็จ',
+                        showPopup: true
+                    });
+                })
                     .catch(err => {
                         console.error('ข้อผิดพลาดในการอัปเดตรหัสผ่าน:', err);
-                        res.status(500).send('ข้อผิดพลาดในการอัปเดตรหัสผ่าน');
+                        res.status(500).send('ข้อผิดพลาดในการอัปเดตรหัสผ่าน กรุณาลองใหม่อีกครั้ง');
                     });
             })
             .catch(err => {
                 console.error('ข้อผิดพลาดในการแฮชรหัสผ่าน:', err);
-                res.status(500).send('ข้อผิดพลาดในการแฮชรหัสผ่าน');
+                res.status(500).send('ข้อผิดพลาดในการประมวลผลรหัสผ่าน กรุณาลองใหม่อีกครั้ง');
             });
     } else {
         let allErrors = validation_result.errors.map((error) => error.msg);
         res.render('resetpass', {
             resetpass_error: allErrors,
-            token: token // ส่ง token กลับไปให้หน้า EJS อีกครั้ง
+            token: token
         });
     }
 });
@@ -477,12 +519,12 @@ app.get('/api/token/:boardId', (req, res) => {
             if (result.rows.length > 0) {
                 res.json({ token: result.rows[0].token });
             } else {
-                res.status(404).send('Board not found');
+                res.status(404).send('ไม่พบบอร์ด');
             }
         })
         .catch(err => {
-            console.error('Error executing query', err.stack);
-            res.status(500).send('Error retrieving token');
+            console.error('เกิดข้อผิดพลาดในการดำเนินการคิวรี', err.stack);
+            res.status(500).send('เกิดข้อผิดพลาดในการดึงข้อมูล token');
         });
 });
 
@@ -491,7 +533,7 @@ app.get('/api/sensor-data', async (req, res) => {
     const { token } = req.query; // รับ token จาก query parameter
 
     if (!token) {
-        return res.status(400).json({ error: 'Token is required' });
+        return res.status(400).json({ error: 'ต้องระบุ Token' });
     }
 
     try {
@@ -500,7 +542,7 @@ app.get('/api/sensor-data', async (req, res) => {
 
         // ถ้าไม่พบข้อมูล
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Data not found' });
+            return res.status(404).json({ error: 'ไม่พบข้อมูล' });
         }
 
         // ส่งข้อมูลกลับในรูปแบบ JSON
@@ -508,8 +550,8 @@ app.get('/api/sensor-data', async (req, res) => {
         res.json({ temp, ph });
 
     } catch (error) {
-        console.error('Error fetching sensor data:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลเซ็นเซอร์:', error);
+        res.status(500).json({ error: 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์' });
     }
 });
 
@@ -521,7 +563,7 @@ app.post('/api/data', (req, res) => {
 
     // ตรวจสอบว่าข้อมูลครบถ้วนหรือไม่
     if (!token || temp === undefined || ph === undefined) {
-        return res.status(400).json({ error: 'Missing required fields' });
+        return res.status(400).json({ error: 'ข้อมูลไม่ครบถ้วน' });
     }
 
     // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
@@ -548,7 +590,7 @@ app.post('/api/data', (req, res) => {
 
                 return Promise.all([updateCreateBtnQuery, insertSensorDataQuery, updateStatus, newTemp]);
             } else {
-                return Promise.reject({ status: 400, message: 'Invalid token' });
+                return Promise.reject({ status: 400, message: 'Token ไม่ถูกต้อง' });
             }
         })
         .then(results => {
@@ -556,7 +598,7 @@ app.post('/api/data', (req, res) => {
             const newTemp = results[3]; // รับค่า new_temp
 
             res.status(200).json({
-                message: 'Data updated and sensor data recorded successfully',
+                message: 'อัปเดตข้อมูลและบันทึกข้อมูลเซ็นเซอร์สำเร็จ',
                 update_status: updateStatus,
                 new_temp: newTemp // ส่ง new_temp กลับไปด้วย
             });
@@ -565,8 +607,8 @@ app.post('/api/data', (req, res) => {
             if (err.status) {
                 res.status(err.status).send(err.message);
             } else {
-                console.error('Error executing query', err.stack);
-                res.status(500).send('Error updating or inserting data');
+                console.error('เกิดข้อผิดพลาดในการดำเนินการคิวรี', err.stack);
+                res.status(500).send('เกิดข้อผิดพลาดในการอัปเดตหรือแทรกข้อมูล');
             }
         });
 });
@@ -578,17 +620,17 @@ app.post('/api/updateStatus', (req, res) => {
 
     // ตรวจสอบข้อมูลที่ได้รับ
     if (!token || updateStatus === undefined) {
-        return res.status(400).json({ error: 'Missing required fields' });
+        return res.status(400).json({ error: 'ข้อมูลไม่ครบถ้วน' });
     }
 
     // อัปเดตค่า update_status ในฐานข้อมูล
     dbConnection.query('UPDATE createbtn SET update_status = $1 WHERE token = $2', [updateStatus, token])
         .then(() => {
-            res.status(200).json({ message: 'Update status changed successfully' });
+            res.status(200).json({ message: 'อัปเดตสถานะสำเร็จ' });
         })
         .catch(err => {
-            console.error('Error updating status:', err);
-            res.status(500).send('Failed to update status');
+            console.error('เกิดข้อผิดพลาดในการอัปเดตสถานะ:', err);
+            res.status(500).send('ไม่สามารถอัปเดตสถานะได้');
         });
 });
 
@@ -598,7 +640,7 @@ app.post('/api/sendStatus', (req, res) => {
     console.log(req.body);
 
     if (!token || sendTemp === undefined) {
-        return res.status(400).json({ error: 'Missing token or sendTemp' });
+        return res.status(400).json({ error: 'ไม่พบ token หรือ sendTemp' });
     }
 
     // Update the new_temp column in the 'createbtn' table
@@ -606,7 +648,7 @@ app.post('/api/sendStatus', (req, res) => {
         .then(result => {
             if (result.rows.length === 0) {
                 // Token not found
-                return res.status(404).json({ error: 'Token not found' });
+                return res.status(404).json({ error: 'ไม่พบ Token' });
             }
             // Return the updated row
             res.status(200).json(result.rows[0]);

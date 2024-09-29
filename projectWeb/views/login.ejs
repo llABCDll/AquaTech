@@ -10,13 +10,25 @@
                     <div class="card-body p-5">
                         <h2 class="text-center mb-4 fw-bold text-dark animate__animated animate__fadeIn" style="color: #26648E !important;">เข้าสู่ระบบ</h2>
                         
+                        <style>
+                            .alert ul {
+                                list-style-type: none;
+                                padding-left: 0;
+                            }
+                        </style>
                         <% if (typeof login_errors !== 'undefined' && login_errors.length > 0) { %>
-                            <div class="alert alert-light border rounded-3 animate__animated animate__fadeIn" id="alert" style="border-color: #26648E !important;">
-                                <ul class="mb-0 text-dark">
+                            <div class="alert alert-danger border-0 rounded-3 animate__animated animate__fadeIn" id="alert" role="alert">
+                                <ul class="mb-0">
                                     <% login_errors.forEach(error => { %>
-                                        <li><%= error %></li>
+                                        <li><%= error.replace(/\.$/, '') %></li>
                                     <% }) %>
                                 </ul>
+                            </div>
+                        <% } %>
+
+                        <% if (typeof success_message !== 'undefined' && success_message) { %>
+                            <div class="alert alert-success border-0 rounded-3 animate__animated animate__fadeIn" id="successAlert" role="alert">
+                                <p class="mb-0"><%= success_message %></p>
                             </div>
                         <% } %>
 
@@ -37,7 +49,7 @@
                         </form>
                         
                         <div class="text-end animate__animated animate__fadeIn">
-                            <a href="/forgotpass" class="text-decoration-none hover-effect" style="color: #26648E;">ลืมรหัสผ่าน?</a>
+                            <a href="/forgotpass" class="text-decoration-none hover-effect" style="color: #26648E;">ลืมรหัสผ่าน</a>
                         </div>
                     </div>
                 </div>
@@ -45,13 +57,17 @@
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         setTimeout(function() {
             var alert = document.getElementById('alert');
             if (alert) {
                 alert.style.display = 'none';
             }
-        }, 3000);
-    </script>
+            var successAlert = document.getElementById('successAlert');
+            if (successAlert) {
+                successAlert.style.display = 'none';
+            }
+        }, 5000);
+    </script> -->
 </body>
 </html>

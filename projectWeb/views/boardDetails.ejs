@@ -151,25 +151,25 @@
 
                     <div class="row mb-4 mt-3 justify-content-center">
                         <div class="col-md-6">
-                            <div
-                                class="card bg-gradient-light rounded-4 shadow-lg animate__animated animate__fadeInUp hover:shadow-xl transition-all">
+                            <div class="card bg-gradient-light rounded-4 shadow-lg animate__animated animate__fadeInUp hover:shadow-xl transition-all">
                                 <div class="card-body p-4 position-relative text-center">
-                                    <h3 class="text-black fw-bold mb-3">
-                                        อุณหภูมิที่ตั้งไว้
+                                    <h3 class="card-title h4 mb-3 text-uppercase font-weight-bold">
+                                        <strong>อุณหภูมิปัจจุบัน</strong>
                                     </h3>
-                                    <h2 class="display-3 text-secondary fw-bold mb-3">
-                                        <span id="currentTemperature"
-                                            class="animate__animated animate__pulse animate__infinite">
+                                    <h2 class="display-3 text-secondary fw-bold mb-4">
+                                        <span id="currentTemperature" class="animate__animated animate__pulse animate__infinite">
                                             <%= board.new_temp %>
                                         </span>
                                         °C
                                     </h2>
                                     <button type="button"
-                                        class="btn btn-lg rounded-pill shadow-sm animate__animated animate__fadeIn hover:shadow-md transition-all mt-3"
-                                        style="background-color: #26648E; color: white;" data-bs-toggle="modal"
-                                        data-bs-target="#changeGeneralTempModal">
+                                            class="btn btn-lg rounded-pill shadow-sm animate__animated animate__fadeIn hover:shadow-md transition-all mb-3"
+                                            style="background-color: #26648E; color: white;" 
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#changeGeneralTempModal">
                                         ปรับอุณหภูมิ
                                     </button>
+                                    <p class="mb-0 text-danger text-end">** อุณหภูมิที่ตั้งค่าจะบวกลบประมาณ 0.5 °C</p>
                                 </div>
                             </div>
                         </div>
@@ -200,8 +200,7 @@
                                 class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInRight hover:shadow-xl transition-all position-relative h-100">
                                 <div class="card-body p-4 p-md-5">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold"><strong>ค่า pH
-                                                ปัจจุบัน</strong></h3>
+                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold"><strong>ค่า pH ปัจจุบัน</strong></h3>
                                         <i class="bi bi-droplet-half text-primary fs-3"></i>
                                     </div>
                                     <h2 class="display-2 fw-bold mb-0 text-center text-primary"
@@ -244,7 +243,7 @@
                     </div>
 
                     <!-- Change Min/Max Temperature Modal -->
-                    <div class="modal fade" id="changeMinMaxTempModal" tabindex="-1"
+                    <!-- <div class="modal fade" id="changeMinMaxTempModal" tabindex="-1"
                         aria-labelledby="changeMinMaxTempModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content rounded-4 border-0 shadow-lg">
@@ -275,14 +274,15 @@
                                                 placeholder="<%= board && board.temp_default && board.temp_default.max_temp || 'ไม่ได้ตั้งค่า' %>"
                                                 required min="22" max="28">
                                         </div>
-                                        <p class="mb-3 text-danger">** สามารถปรับอุณหภูมิได้ 22-28 °C</p>
+                                        <p class="mb-3 text-danger">** สามารถปรับอุณหภูมิได้ 24-28 °C</p>
+                                        <p class="mb-3 text-danger">** อุณหภูมิที่ตั้งค่าจะบวกลบประมาณ 0.5 °C</p>
                                         <button type="submit"
                                             class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Change General Temperature Modal -->
                     <div class="modal fade" id="changeGeneralTempModal" tabindex="-1"
@@ -306,7 +306,7 @@
                                                 class="form-control form-control-lg bg-light"
                                                 placeholder="<%= board.new_temp %>" required min="22" max="28">
                                         </div>
-                                        <p class="mb-3 text-danger">** สามารถปรับอุณหภูมิได้ 22-28 °C</p>
+                                        <p class="mb-3 text-danger">** สามารถปรับอุณหภูมิได้ 24-28 °C</p>
                                         <button type="submit"
                                             class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
                                     </form>
@@ -346,7 +346,7 @@
 
                     <!-- Date Picker -->
                     <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
-                        <h2 class="mb-4 text-center fw-bold">เลือกวันที่ดูข้อมูลตู้ปลา</h2>
+                        <p class="mb-4 text-black" style="font-size: 1.5rem;">เลือกวันที่เพื่อดูข้อมูลของตู้ปลา <span class="text-danger" style="font-size: 1rem;">** สามารถดูข้อมูลได้แบบย้อนหลัง</span></p>
                         <div class="input-group mb-4">
                             <input type="date" id="date-picker" class="form-control form-control-lg">
                             <button class="btn btn-primary" id="fetchDataBtn">ดูข้อมูลตู้ปลา</button>

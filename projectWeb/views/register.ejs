@@ -10,11 +10,17 @@
                     <div class="card-body p-5">
                         <h2 class="text-center mb-4 fw-bold animate__animated animate__fadeIn" style="color: #26648E;">ลงทะเบียน</h2>
                         
+                        <style>
+                            .alert ul {
+                                list-style-type: none;
+                                padding-left: 0;
+                            }
+                        </style>
                         <% if (typeof register_error !== 'undefined' && register_error.length > 0) { %>
-                            <div class="alert alert-light border rounded-3 animate__animated animate__fadeIn" id="alert" style="border-color: #26648E;">
-                                <ul class="mb-0 text-dark">
+                            <div class="alert alert-danger border-0 rounded-3 animate__animated animate__fadeIn" id="alert" role="alert">
+                                <ul class="mb-0">
                                     <% register_error.forEach(error => { %>
-                                        <li><%= error %></li>
+                                        <li><%= error.replace(/\.$/, '') %></li>
                                     <% }) %>
                                 </ul>
                             </div>
@@ -47,14 +53,14 @@
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         // ซ่อนข้อความแจ้งเตือนหลังจาก 3 วินาที
         setTimeout(function () {
             document.querySelectorAll('.alert').forEach(function (alert) {
                 alert.style.display = 'none';
             });
         }, 3000);
-    </script>
+    </script> -->
 </body>
 
 </html>
