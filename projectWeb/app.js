@@ -316,36 +316,36 @@ app.post('/updateTemp', (req, res) => {
 });
 
 // updateTemplable
-app.post('/updateTemplabel', async (req, res) => {
-    const { token, minTemp, maxTemp } = req.body;
+// app.post('/updateTemplabel', async (req, res) => {
+//     const { token, minTemp, maxTemp } = req.body;
 
-    try {
-        console.log(req.body);
+//     try {
+//         console.log(req.body);
 
-        const tempDefault = {
-            min_temp: minTemp,
-            max_temp: maxTemp
-        };
+//         const tempDefault = {
+//             min_temp: minTemp,
+//             max_temp: maxTemp
+//         };
 
-        await dbConnection.query(
-            'UPDATE createbtn SET temp_default = $1, update_status = 1 WHERE token = $2',
-            [tempDefault, token]
-        );
+//         await dbConnection.query(
+//             'UPDATE createbtn SET temp_default = $1, update_status = 1 WHERE token = $2',
+//             [tempDefault, token]
+//         );
 
-        const result = await dbConnection.query(
-            'SELECT * FROM createbtn WHERE token = $1',
-            [token]
-        );
+//         const result = await dbConnection.query(
+//             'SELECT * FROM createbtn WHERE token = $1',
+//             [token]
+//         );
 
-        res.status(200).json({
-            min_temp: result.rows[0].temp_default.min_temp,
-            max_temp: result.rows[0].temp_default.max_temp
-        });
-    } catch (err) {
-        console.error('Error updating temperature:', err);
-        res.status(500).send('Failed to update temperature');
-    }
-});
+//         res.status(200).json({
+//             min_temp: result.rows[0].temp_default.min_temp,
+//             max_temp: result.rows[0].temp_default.max_temp
+//         });
+//     } catch (err) {
+//         console.error('Error updating temperature:', err);
+//         res.status(500).send('Failed to update temperature');
+//     }
+// });
 
 // dashboard
 app.get('/dashboard', ifLoggedIn, (req, res) => {
@@ -513,7 +513,7 @@ app.get('/api/sensor-data', async (req, res) => {
     }
 });
 
-// api บันทึกค่า temp, ph และ เก็บข้อมูลทุกๆ 1 ชม.
+// api บันทึกค่า temp, ph และ เก็บข้อมูลทุกๆ วินาที
 app.post('/api/data', (req, res) => {
     const { token, temp, ph } = req.body;
 
@@ -540,15 +540,13 @@ app.post('/api/data', (req, res) => {
                     [temp, ph, boardId]
                 );
 
-                // ตรวจสอบข้อมูลล่าสุดที่บันทึกใน sensor_data ว่าผ่านไปแล้ว 1 ชั่วโมงหรือไม่
-                const checkLastInsertQuery = dbConnection.query(
-                    `SELECT timestamp FROM sensor_data 
-                     WHERE token = $1 
-                     ORDER BY timestamp DESC LIMIT 1`,
-                    [token]
+                // แทรกข้อมูลลงใน sensor_data ทันทีทุกวินาที
+                const insertSensorDataQuery = dbConnection.query(
+                    'INSERT INTO sensor_data (temp, ph, token, timestamp) VALUES ($1, $2, $3, $4)',
+                    [temp, ph, token, currentTimestamp]
                 );
 
-                return Promise.all([updateCreateBtnQuery, checkLastInsertQuery, updateStatus, newTemp]);
+                return Promise.all([updateCreateBtnQuery, insertSensorDataQuery, updateStatus, newTemp]);
             } else {
                 return Promise.reject({ status: 400, message: 'Invalid token' });
             }
@@ -556,27 +554,11 @@ app.post('/api/data', (req, res) => {
         .then(results => {
             const updateStatus = results[2];
             const newTemp = results[3]; // รับค่า new_temp
-            const lastInsertTimestamp = results[1].rows[0]?.timestamp;
-            const currentMoment = moment(currentTimestamp);
 
-            // ถ้าไม่มีข้อมูลล่าสุด หรือข้อมูลล่าสุดเกินกว่า 1 ชั่วโมงแล้ว
-            if (!lastInsertTimestamp || currentMoment.diff(moment(lastInsertTimestamp), 'hours') >= 1) {
-                // แทรกข้อมูลลงใน sensor_data
-                return dbConnection.query(
-                    'INSERT INTO sensor_data (temp, ph, token, timestamp) VALUES ($1, $2, $3, $4)',
-                    [temp, ph, token, currentTimestamp]
-                ).then(() => {
-                    return { update_status: updateStatus, new_temp: newTemp }; // ส่งกลับค่า update_status และ new_temp พร้อมกับข้อมูลใหม่
-                });
-            } else {
-                return { update_status: updateStatus, new_temp: newTemp }; // ส่งกลับค่า update_status และ new_temp โดยไม่มีการแทรกข้อมูลใหม่
-            }
-        })
-        .then(result => {
             res.status(200).json({
-                message: 'Data updated successfully, sensor data recorded if passed 1 hour',
-                update_status: result.update_status,
-                new_temp: result.new_temp // ส่ง new_temp กลับไปด้วย
+                message: 'Data updated and sensor data recorded successfully',
+                update_status: updateStatus,
+                new_temp: newTemp // ส่ง new_temp กลับไปด้วย
             });
         })
         .catch(err => {
@@ -588,6 +570,7 @@ app.post('/api/data', (req, res) => {
             }
         });
 });
+
 
 // api update ค่าสถานะ จาก 1 เป็น 0 
 app.post('/api/updateStatus', (req, res) => {
@@ -609,7 +592,7 @@ app.post('/api/updateStatus', (req, res) => {
         });
 });
 
-// API for receiving temperature updates from ESP32
+// API ปรับค่าฝั่งทาง ESP32
 app.post('/api/sendStatus', (req, res) => {
     const { token, sendTemp } = req.body;
     console.log(req.body);
