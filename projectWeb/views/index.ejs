@@ -19,7 +19,7 @@
                         <div class="modal-content rounded-4 border-0 shadow-lg animate__animated animate__zoomIn">
                             <form action="/createboard" method="post">
                                 <div class="modal-header bg-light text-dark border-bottom">
-                                    <h5 class="modal-title fw-bold" id="exampleModalLabel">เปลี่ยนชื่อตู้ปลา</h5>
+                                    <h5 class="modal-title fw-bold" id="exampleModalLabel">สร้างบอร์ด</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="ปิด"></button>
                                 </div>
@@ -27,9 +27,9 @@
                                     <input type="hidden" name="user_email" value="<%= username %>">
                                     <div class="mb-4">
                                         <label for="nameboard"
-                                            class="form-label fw-bold text-secondary">ชื่อใหม่ของตู้ปลา:</label>
+                                            class="form-label fw-bold text-secondary">ชื่อบอร์ด</label>
                                         <input type="text" id="nameboard" name="nameboard"
-                                            class="form-control form-control-lg bg-light" placeholder="กรุณาใส่ชื่อใหม่"
+                                            class="form-control form-control-lg bg-light" placeholder="กรุณาใส่ชื่อบอร์ด"
                                             required>
                                     </div>
                                     <input type="hidden" id="tokenInput" name="token">
