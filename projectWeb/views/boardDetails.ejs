@@ -18,6 +18,12 @@
     <link rel="stylesheet" href="/css/font.css">
     <link rel="icon" type="image/x-icon" href="/pic/apple-touch-icon.png" />
     <link rel="stylesheet" href="/css/styleDetail.css" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.th.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -96,77 +102,26 @@
                             </p>
                         </div>
                     </div>
-                    <!-- <div class="row mb-4 mb-md-5 justify-content-center">
-                        <div class="col-12">
-                            <div
-                                class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInLeft hover:shadow-xl transition-all position-relative">
-                                <div class="card-body p-4 p-md-5">
-                                    <div
-                                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-                                        <h3 class="card-title h2 mb-3 mb-md-0 text-uppercase font-weight-bold">
-                                            <strong>อุณหภูมิที่เครื่องสามารถทำได้</strong>
-                                        </h3>
-                                        <button type="button"
-                                            class="btn btn-secondary rounded-pill animate__animated animate__fadeInRight border-0 fs-5 px-3 py-2 shadow-sm"
-                                            data-bs-toggle="modal" data-bs-target="#changeMinMaxTempModal">
-                                            <strong>ตั้งค่าอุณหภูมิ</strong><i class="bi bi-sliders ms-2"></i>
-                                        </button>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h1 class="fw-bold mb-4 text-center">
-                                                <span class="text-secondary fs-3 fw-bold">
-                                                    <strong>อุณหภูมิต่ำสุด</strong>
-                                                </span>
-                                                <br>
-                                                <span id="minTemperature" class="text-black display-4 fw-bold">
-                                                    <strong>
-                                                        <%= (board && board.temp_default && board.temp_default.min_temp)
-                                                            || 'ไม่ได้ตั้งค่า' %> °C
-                                                    </strong>
-                                                </span>
-
-                                            </h1>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h1 class="fw-bold mb-0 text-center">
-                                                <span class="text-secondary fs-3 fw-bold">
-                                                    <strong>อุณหภูมิสูงสุด</strong>
-                                                </span>
-                                                <br>
-                                                <span id="maxTemperature" class="text-black display-4 fw-bold">
-                                                    <strong>
-                                                        <%= (board && board.temp_default && board.temp_default.max_temp)
-                                                            || 'ไม่ได้ตั้งค่า' %> °C
-                                                    </strong>
-                                                </span>
-                                            </h1>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-                    <!-- Change General Temperature Button -->
 
                     <div class="row mb-4 mt-3 justify-content-center">
                         <div class="col-md-6">
-                            <div class="card bg-gradient-light rounded-4 shadow-lg animate__animated animate__fadeInUp hover:shadow-xl transition-all">
+                            <div
+                                class="card bg-gradient-light rounded-4 shadow-lg animate__animated animate__fadeInUp hover:shadow-xl transition-all">
                                 <div class="card-body p-4 position-relative text-center">
                                     <h3 class="card-title h4 mb-3 text-uppercase font-weight-bold">
                                         <strong>อุณหภูมิปัจจุบัน</strong>
                                     </h3>
                                     <h2 class="display-3 text-secondary fw-bold mb-4">
-                                        <span id="currentTemperature" class="animate__animated animate__pulse animate__infinite">
+                                        <span id="currentTemperature"
+                                            class="animate__animated animate__pulse animate__infinite">
                                             <%= board.new_temp %>
                                         </span>
                                         °C
                                     </h2>
                                     <button type="button"
-                                            class="btn btn-lg rounded-pill shadow-sm animate__animated animate__fadeIn hover:shadow-md transition-all mb-3"
-                                            style="background-color: #26648E; color: white;" 
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#changeGeneralTempModal">
+                                        class="btn btn-lg rounded-pill shadow-sm animate__animated animate__fadeIn hover:shadow-md transition-all mb-3"
+                                        style="background-color: #26648E; color: white;" data-bs-toggle="modal"
+                                        data-bs-target="#changeGeneralTempModal">
                                         ปรับอุณหภูมิ
                                     </button>
                                     <p class="mb-0 text-danger text-end">** อุณหภูมิที่ตั้งค่าจะบวกลบประมาณ 0.5 °C</p>
@@ -200,7 +155,8 @@
                                 class="card bg-light text-dark rounded-4 shadow-lg animate__animated animate__fadeInRight hover:shadow-xl transition-all position-relative h-100">
                                 <div class="card-body p-4 p-md-5">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold"><strong>ค่า pH ปัจจุบัน</strong></h3>
+                                        <h3 class="card-title h4 mb-0 text-uppercase font-weight-bold"><strong>ค่า pH
+                                                ปัจจุบัน</strong></h3>
                                         <i class="bi bi-droplet-half text-primary fs-3"></i>
                                     </div>
                                     <h2 class="display-2 fw-bold mb-0 text-center text-primary"
@@ -241,48 +197,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Change Min/Max Temperature Modal -->
-                    <!-- <div class="modal fade" id="changeMinMaxTempModal" tabindex="-1"
-                        aria-labelledby="changeMinMaxTempModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content rounded-4 border-0 shadow-lg">
-                                <div class="modal-header bg-light text-dark border-bottom">
-                                    <h5 class="modal-title fw-bold" id="changeGeneralTempModalLabel">เปลี่ยนอุณหภูมิ
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body p-4 bg-white">
-                                    <form id="changeMinMaxTempForm">
-                                        <input type="hidden" name="token" value="<%= board.token %>">
-                                        <div class="mb-4">
-                                            <label for="minTemp"
-                                                class="form-label fw-bold text-secondary">อุณหภูมิต่ำสุด
-                                                (°C):</label>
-                                            <input type="number" id="minTemp" name="minTemp"
-                                                class="form-control form-control-lg bg-light"
-                                                placeholder="<%= board && board.temp_default && board.temp_default.min_temp || 'ไม่ได้ตั้งค่า' %>"
-                                                required min="22" max="28">
-                                        </div>
-                                        <div class="mb-4">
-                                            <label for="maxTemp"
-                                                class="form-label fw-bold text-secondary">อุณหภูมิสูงสุด
-                                                (°C):</label>
-                                            <input type="number" id="maxTemp" name="maxTemp"
-                                                class="form-control form-control-lg bg-light"
-                                                placeholder="<%= board && board.temp_default && board.temp_default.max_temp || 'ไม่ได้ตั้งค่า' %>"
-                                                required min="22" max="28">
-                                        </div>
-                                        <p class="mb-3 text-danger">** สามารถปรับอุณหภูมิได้ 24-28 °C</p>
-                                        <p class="mb-3 text-danger">** อุณหภูมิที่ตั้งค่าจะบวกลบประมาณ 0.5 °C</p>
-                                        <button type="submit"
-                                            class="btn btn-secondary btn-lg w-100 rounded-pill">บันทึก</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
 
                     <!-- Change General Temperature Modal -->
                     <div class="modal fade" id="changeGeneralTempModal" tabindex="-1"
@@ -346,7 +260,8 @@
 
                     <!-- Date Picker -->
                     <div class="container mt-4 mt-md-5 animate__animated animate__fadeIn">
-                        <p class="mb-4 text-black" style="font-size: 1.5rem;">เลือกวันที่เพื่อดูข้อมูลของตู้ปลา <span class="text-danger" style="font-size: 1rem;">** สามารถดูข้อมูลได้แบบย้อนหลัง</span></p>
+                        <p class="mb-4 text-black" style="font-size: 1.5rem;">เลือกวันที่เพื่อดูข้อมูลของตู้ปลา <span
+                                class="text-danger" style="font-size: 1rem;">** สามารถดูข้อมูลได้แบบย้อนหลัง</span></p>
                         <div class="input-group mb-4">
                             <input type="date" id="date-picker" class="form-control form-control-lg">
                             <button class="btn btn-primary" id="fetchDataBtn">ดูข้อมูลตู้ปลา</button>
@@ -422,25 +337,25 @@
                         </div>
                     </div>
 
-                    <!-- Bootstrap Toast -->
+                    <!-- Bootstrap Toast for Success Messages for change name -->
                     <div id="successToast" class="toast position-fixed top-0 end-0 p-3" style="z-index: 1050;">
                         <div class="toast-header">
                             <strong class="me-auto">แจ้งเตือน</strong>
                             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
                         <div class="toast-body">
-                            ส่งคำขออัปเดตอุณหภูมิสำเร็จ!
+                            อัปเดตอุณหภูมิสำเร็จ!
                         </div>
                     </div>
 
-                    <!-- Bootstrap Toast for Success Messages -->
+                    <!-- Bootstrap Toast for Success Messages for change name -->
                     <div id="successToast_ChangeName" class="toast position-fixed top-0 end-0 p-3"
                         style="z-index: 1050;">
                         <div class="toast-header">
                             <strong class="me-auto">แจ้งเตือน</strong>
                             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
                         </div>
-                        <div class="toast-body" id="toastMessage">ส่งคำขอเปลี่ยนชื่สำเร็จ!</div>
+                        <div class="toast-body" id="toastMessage">เปลี่ยนชื่อสำเร็จ!</div>
                     </div>
 
                     <script>
@@ -451,48 +366,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const minMaxTempForm = document.getElementById('changeMinMaxTempForm');
-
-                minMaxTempForm.addEventListener('submit', function (event) {
-                    event.preventDefault();
-
-                    const formData = new FormData(minMaxTempForm);
-                    const token = formData.get('token');
-                    const minTemp = formData.get('minTemp');
-                    const maxTemp = formData.get('maxTemp');
-
-                    if (minTemp === null || minTemp === '' || maxTemp === null || maxTemp === '') {
-                        alert('Please enter valid temperatures');
-                        return;
-                    }
-
-                    fetch('/updateTemplabel', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ token, minTemp, maxTemp })
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                alert('Min and Max temperatures updated successfully!');
-                                document.getElementById('currentMinTemp').textContent = minTemp;
-                                document.getElementById('currentMaxTemp').textContent = maxTemp;
-                            } else {
-                                alert('Failed to update Min and Max temperatures');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Failed to update Min and Max temperatures');
-                        });
-                });
-            });
-        </script> -->
-
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const generalTempForm = document.getElementById('changeGeneralTempForm');
@@ -586,7 +459,6 @@
             });
         </script>
 
-
         <script>
             function copyToClipboard() {
                 // คัดลอกข้อความจาก span ที่มี id เป็น tokenText
@@ -606,14 +478,14 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const token = '<%= board.token %>'; // ใช้ token ของบอร์ด
-                const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD'); // วันที่ของวันก่อนหน้า
+                const today = moment().format('YYYY-MM-DD');
 
                 // กำหนด timestamp ปัจจุบันในเขตเวลาที่ต้องการ (เช่น Asia/Bangkok)
                 const currentTimestamp = moment().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
                 console.log('Current Timestamp:', currentTimestamp);
 
                 // ตั้งค่าเริ่มต้นใน date-picker เป็นวันก่อนหน้า
-                document.getElementById('date-picker').value = yesterday;
+                document.getElementById('date-picker').value = today;
 
                 // ฟังก์ชันสำหรับการดึงข้อมูล
                 let tempChart, phChart;
@@ -741,7 +613,7 @@
                         });
                 }
                 // เรียกข้อมูลของวันก่อนหน้าเมื่อตอนโหลดหน้าเว็บ
-                fetchDataForDate(yesterday);
+                fetchDataForDate(today);
 
                 // กดปุ่มเพื่อเลือกวันที่ใหม่
                 document.getElementById('fetchDataBtn').addEventListener('click', function () {

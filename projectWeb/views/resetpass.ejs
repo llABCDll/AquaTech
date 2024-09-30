@@ -47,18 +47,15 @@
             </div>
         </div>
     </div>
+    <script>
+        // ซ่อนข้อความแจ้งเตือนหลังจาก 3 วินาที
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(function (alert) {
+                alert.style.display = 'none';
+            });
+        }, 3000);
+    </script>
     
-    <!-- <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
-            var password = document.getElementById('_rpass').value;
-            var confirmPassword = document.getElementById('_confirm_pass').value;
-            
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('รหัสผ่านไม่ตรงกัน กรุณาตรวจสอบและลองอีกครั้ง');
-            }
-        });
-    </script> -->
 </body>
 
 </html>

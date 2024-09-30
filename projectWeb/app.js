@@ -19,7 +19,6 @@ app.use(express.urlencoded({ extended: false }));
 const WebSocket = require('ws');
 const http = require('http');
 
-
 // สร้าง HTTP server จาก Express
 const server = http.createServer(app);
 
@@ -322,7 +321,7 @@ app.post('/updateTemp', (req, res) => {
             return dbConnection.query('SELECT * FROM createbtn ORDER BY id ASC');
         })
         .then(result => {
-            // ส่งข้อมูลที่อัปเดตกลับไปยังหน้าเว็บหรือทำสิ่งที่ต้องการ
+            // ส่งข้อมูลที่อัปเดตกลับไปยังหน้าเว็บ
             res.status(200).json(result.rows);
         })
         .catch(err => {
@@ -330,38 +329,6 @@ app.post('/updateTemp', (req, res) => {
             res.status(500).send('ไม่สามารถอัปเดตอุณหภูมิได้');
         });
 });
-
-// updateTemplable
-// app.post('/updateTemplabel', async (req, res) => {
-//     const { token, minTemp, maxTemp } = req.body;
-
-//     try {
-//         console.log(req.body);
-
-//         const tempDefault = {
-//             min_temp: minTemp,
-//             max_temp: maxTemp
-//         };
-
-//         await dbConnection.query(
-//             'UPDATE createbtn SET temp_default = $1, update_status = 1 WHERE token = $2',
-//             [tempDefault, token]
-//         );
-
-//         const result = await dbConnection.query(
-//             'SELECT * FROM createbtn WHERE token = $1',
-//             [token]
-//         );
-
-//         res.status(200).json({
-//             min_temp: result.rows[0].temp_default.min_temp,
-//             max_temp: result.rows[0].temp_default.max_temp
-//         });
-//     } catch (err) {
-//         console.error('เกิดข้อผิดพลาดในการอัปเดตอุณหภูมิ:', err);
-//         res.status(500).send('ไม่สามารถอัปเดตอุณหภูมิได้');
-//     }
-// });
 
 // dashboard
 app.get('/dashboard', ifLoggedIn, (req, res) => {
@@ -441,8 +408,8 @@ app.post('/forgotpass', ifLoggedIn, [
 
         dbConnection.query('UPDATE users_iptcn SET reset_token = $1 WHERE email = $2', [token, user_email])
             .then(() => {
-                res.render('resetpass', { 
-                    email: user_email, 
+                res.render('resetpass', {
+                    email: user_email,
                     token: token,
                     success_message: 'กรุณาตรวจสอบอีเมลของคุณเพื่อรีเซ็ตรหัสผ่าน'
                 });
@@ -486,12 +453,13 @@ app.post('/resetpass', [
         bcrypt.hash(user_pass, 12)
             .then((hashedPassword) => {
                 dbConnection.query("UPDATE users_iptcn SET password = $1, reset_token = NULL WHERE reset_token = $2", [hashedPassword, token])
-                .then(() => {
-                    res.render('login', {
-                        success_message: 'เปลี่ยนรหัสผ่านสำเร็จ',
-                        showPopup: true
-                    });
-                })
+                    .then(() => {
+                        res.render('login', {
+                            success_message: 'เปลี่ยนรหัสผ่านสำเร็จ',
+                            showPopup: true
+
+                        });
+                    })
                     .catch(err => {
                         console.error('ข้อผิดพลาดในการอัปเดตรหัสผ่าน:', err);
                         res.status(500).send('ข้อผิดพลาดในการอัปเดตรหัสผ่าน กรุณาลองใหม่อีกครั้ง');
