@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 
 const WebSocket = require('ws');
 const http = require('http');
+const { name } = require('ejs');
 
 // สร้าง HTTP server จาก Express
 const server = http.createServer(app);
@@ -127,14 +128,16 @@ app.get('/resetpass', (req, res) => {
 });
 
 app.get('/', ifNotLoggedIn, (req, res, next) => {
-    dbConnection.query("SELECT email FROM users_iptcn WHERE id = $1", [req.session.userID])
+    dbConnection.query("SELECT email, username FROM users_iptcn WHERE id = $1", [req.session.userID])
         .then((result) => {
             if (result.rows.length > 0) {
+                const userName = result.rows[0].username;
                 const userEmail = result.rows[0].email;
                 dbConnection.query("SELECT * FROM createbtn WHERE email = $1", [userEmail])
                     .then((boardsResult) => {
                         res.render('index', {
                             username: userEmail,
+                            user : userName || null,
                             boards: boardsResult.rows
                         });
                     })
@@ -142,6 +145,7 @@ app.get('/', ifNotLoggedIn, (req, res, next) => {
                         console.error('เกิดข้อผิดพลาดในการดึงข้อมูลบอร์ด:', err);
                         res.render('index', {
                             username: userEmail,
+                            user: userName || null,
                             boards: []
                         });
                     });
@@ -238,7 +242,6 @@ app.post('/login', ifLoggedIn, [
                         if (compare_result === true) {
                             req.session.isLoggedIn = true;
                             req.session.userID = result.rows[0].id;
-
                             res.redirect('/');
                         } else {
                             res.render('login', {
@@ -267,8 +270,7 @@ app.post('/login', ifLoggedIn, [
 
 // createbtn
 app.post('/createboard', ifNotLoggedIn, (req, res) => {
-    const { nameboard, user_email, token, temp_min, temp_max } = req.body;
-    // const temp_default = JSON.stringify({ min: temp_min, max: temp_max });
+    const { nameboard, user_email, token} = req.body;
 
     console.log('Request Body:', req.body);
 
