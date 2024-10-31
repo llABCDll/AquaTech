@@ -128,7 +128,7 @@ app.get('/resetpass', (req, res) => {
 });
 
 app.get('/', ifNotLoggedIn, (req, res, next) => {
-    dbConnection.query("SELECT email, username FROM users_iptcn WHERE id = $1", [req.session.userID])
+    dbConnection.query("SELECT email, username FROM users WHERE id = $1", [req.session.userID])
         .then((result) => {
             if (result.rows.length > 0) {
                 const userName = result.rows[0].username;
@@ -162,7 +162,7 @@ app.get('/', ifNotLoggedIn, (req, res, next) => {
 // register
 app.post('/register', ifLoggedIn, [
     body('user_email', 'อีเมลไม่ถูกต้อง!').isEmail().custom((value) => {
-        return dbConnection.query('SELECT email FROM users_iptcn WHERE email = $1', [value])
+        return dbConnection.query('SELECT email FROM users WHERE email = $1', [value])
             .then(({ rows }) => {
                 if (rows.length > 0) {
                     return Promise.reject('อีเมลนี้ถูกใช้งานแล้ว!');
@@ -185,7 +185,7 @@ app.post('/register', ifLoggedIn, [
     if (validation_result.isEmpty()) {
         bcrypt.hash(user_pass, 12)
             .then((hashedPassword) => {
-                dbConnection.query("INSERT INTO users_iptcn (username, email, password) VALUES ($1, $2, $3)", [user_name, user_email, hashedPassword])
+                dbConnection.query("INSERT INTO users (username, email, password) VALUES ($1, $2, $3)", [user_name, user_email, hashedPassword])
                     .then(() => {
                         res.render('login', {
                             success_message: 'สมัครสำเร็จแล้ว',
@@ -214,7 +214,7 @@ app.post('/register', ifLoggedIn, [
 // login
 app.post('/login', ifLoggedIn, [
     body('user_email').custom((value) => {
-        return dbConnection.query("SELECT email FROM users_iptcn WHERE email = $1", [value])
+        return dbConnection.query("SELECT email FROM users WHERE email = $1", [value])
             .then(({ rows }) => {
                 if (rows.length === 1) {
                     return true;
@@ -234,7 +234,7 @@ app.post('/login', ifLoggedIn, [
     }
 
     if (validation_result.isEmpty()) {
-        dbConnection.query("SELECT * FROM users_iptcn WHERE email = $1", [user_email])
+        dbConnection.query("SELECT * FROM users WHERE email = $1", [user_email])
             .then((result) => {
 
                 bcrypt.compare(user_pass, result.rows[0].password)
@@ -388,7 +388,7 @@ app.get('/board/:id', ifNotLoggedIn, (req, res) => {
 // forgot password 
 app.post('/forgotpass', ifLoggedIn, [
     body('user_email', 'กรุณากรอกที่อยู่อีเมลให้ถูกต้อง').isEmail().custom((value) => {
-        return dbConnection.query('SELECT email FROM users_iptcn WHERE email = $1', [value])
+        return dbConnection.query('SELECT email FROM users WHERE email = $1', [value])
             .then(({ rows }) => {
                 if (rows.length === 0) {
                     return Promise.reject('ไม่พบอีเมลนี้ในระบบ กรุณาตรวจสอบและลองใหม่อีกครั้ง');
@@ -408,7 +408,7 @@ app.post('/forgotpass', ifLoggedIn, [
     if (validation_result.isEmpty()) {
         const token = generateRandomToken();
 
-        dbConnection.query('UPDATE users_iptcn SET reset_token = $1 WHERE email = $2', [token, user_email])
+        dbConnection.query('UPDATE users SET reset_token = $1 WHERE email = $2', [token, user_email])
             .then(() => {
                 res.render('resetpass', {
                     email: user_email,
@@ -454,7 +454,7 @@ app.post('/resetpass', [
     if (validation_result.isEmpty()) {
         bcrypt.hash(user_pass, 12)
             .then((hashedPassword) => {
-                dbConnection.query("UPDATE users_iptcn SET password = $1, reset_token = NULL WHERE reset_token = $2", [hashedPassword, token])
+                dbConnection.query("UPDATE users SET password = $1, reset_token = NULL WHERE reset_token = $2", [hashedPassword, token])
                     .then(() => {
                         res.render('login', {
                             success_message: 'เปลี่ยนรหัสผ่านสำเร็จ',
